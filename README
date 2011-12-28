@@ -1,1 +1,6 @@
-This file was created by IntelliJ IDEA 11.0 for binding GitHub repository
+Welcome to JFPA - Java File Persistence Api
+
+JFPA is a small library that helps you reading and writing text files containing data.
+It can handle positional or delimited records, single line or multiple line records.
+Configuration is made by annotation or by class inheritance.
+
