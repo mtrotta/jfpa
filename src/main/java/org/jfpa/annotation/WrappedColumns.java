@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Matteo Trotta
+ * Copyright (c) 2012 Matteo Trotta
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Sometimes it's useful to wrap multiple columns inside
+ * a single bean. The WrappedColumns annotation can be used
+ * on a field, whose class must contain at least one @Column
+ */
 @Target(value = ElementType.FIELD)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface WrappedColumns {

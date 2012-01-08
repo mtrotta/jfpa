@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Matteo Trotta
+ * Copyright (c) 2012 Matteo Trotta
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ *
+ */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Positional {
+    /**
+     * Minimum length of the string to be considered
+     * a valid positional record. Parsing of a smaller
+     * length string will throw a {@link org.jfpa.exception.InvalidRecordException}
+     */
     int minLength() default 0;
 }

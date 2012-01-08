@@ -2,6 +2,8 @@ package org.jfpa.cache;
 
 import org.jfpa.manager.ColumnType;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Matteo Trotta
@@ -17,12 +19,14 @@ public class CachedColumn {
     private String format;
     private String[] booleanFormat;
     private boolean invalidateOnError;
+    private Field parentField;
 
-    public CachedColumn(final String name, final ColumnType columnType, final int offset, final boolean invalidateOnError) {
+    public CachedColumn(final String name, final ColumnType columnType, final int offset, final boolean invalidateOnError, final Field parentField) {
         this.name = name;
         this.offset = offset;
         this.columnType = columnType;
         this.invalidateOnError = invalidateOnError;
+        this.parentField = parentField;
     }
 
     public final String getName() {
@@ -71,5 +75,13 @@ public class CachedColumn {
 
     public final boolean isInvalidateOnError() {
         return invalidateOnError;
+    }
+    
+    public final Field getParentField() {
+        return this.parentField;
+    }
+
+    public final boolean isWrapped() {
+        return parentField != null;
     }
 }

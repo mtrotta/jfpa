@@ -33,7 +33,21 @@ import java.lang.annotation.Target;
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface MultiplePositional {
+
+    /**
+     * Integer begin position of column containing record type
+     */
     int typePositionBegin() default -1;
+
+    /**
+     * Integer end position of column containing record type
+     */
     int typePositionEnd() default -1;
+
+    /**
+     * For more complex type extraction you can specify a
+     * {@link TypeExtractor} that returns a String containing
+     * record type
+     */
     Class<? extends TypeExtractor> typeExtractor() default NullExtractor.class;
 }

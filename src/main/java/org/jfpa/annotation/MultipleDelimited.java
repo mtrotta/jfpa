@@ -46,7 +46,7 @@ public @interface MultipleDelimited {
     int typePosition() default -1;
 
     /**
-     * Fore more complex type extraction you can specify a
+     * For more complex type extraction you can specify a
      * {@link TypeExtractor} that returns a String containing
      * record type
      */

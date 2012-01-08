@@ -38,7 +38,9 @@ public @interface Delimited {
 
     /**
      * Minimum column number that line should contain to be
-     * considered a valid record.
+     * considered a valid record. Parsing a line that contains
+     * a smaller value of columns will throw a
+     * {@link org.jfpa.exception.InvalidRecordException}
      */
     int minColumns() default 0;
 }

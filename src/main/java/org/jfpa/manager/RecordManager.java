@@ -1,11 +1,22 @@
+/*
+ * Copyright (c) 2012 Matteo Trotta
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jfpa.manager;
 
-import org.jfpa.annotation.Column;
-import org.jfpa.annotation.Delimited;
-import org.jfpa.annotation.MultipleDelimited;
-import org.jfpa.annotation.MultiplePositional;
-import org.jfpa.annotation.Positional;
-import org.jfpa.annotation.SubRecord;
+import org.jfpa.annotation.*;
 import org.jfpa.cache.CachedColumn;
 import org.jfpa.cache.CachedMultipleRecord;
 import org.jfpa.cache.CachedRecord;
@@ -36,12 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Matteo Trotta
- * Copyright © 2011 Matteo Trotta
- * Date: 29/09/11
- */
 public class RecordManager {
 
     private Map<Class, Type> knownClasses = new HashMap<Class, Type>();
@@ -114,11 +119,17 @@ public class RecordManager {
     }
 
     private <T> T createRecord(FlatRecord record, Class<T> clazz) throws InvalidRecordException, IllegalAccessException, InstantiationException {
-        T instance = clazz.newInstance();
+        T rootInstance = clazz.newInstance();
         CachedRecord cachedRecord = singleClasses.get(clazz);
+        for (Map.Entry<Field, Class> entry : cachedRecord.getMapWrappedClasses().entrySet()) {
+            Field field = entry.getKey();
+            Object wrappedInstance = entry.getValue().newInstance();
+            field.set(rootInstance, wrappedInstance);
+        }
         for (Map.Entry<Field, CachedColumn> entry : cachedRecord.getMapColumns().entrySet()) {
             Field field = entry.getKey();
             CachedColumn cachedColumn = entry.getValue();
+            Object instance = cachedColumn.isWrapped() ? cachedColumn.getParentField().get(rootInstance) : rootInstance;
             try {
                 switch (cachedColumn.getColumnType()) {
                     case STRING:
@@ -151,7 +162,7 @@ public class RecordManager {
                 if (cachedColumn.isInvalidateOnError()) { throw e; }
             }
         }
-        return instance;
+        return rootInstance;
     }
 
     private <T> T readSingle(String line, Class<T> clazz) throws InvalidRecordException {
@@ -184,11 +195,12 @@ public class RecordManager {
         return record.toString();
     }
 
-    private void setFields(FlatRecord record, Object instance, Map<Field, CachedColumn> mapColumns) throws InvalidRecordException {
+    private void setFields(FlatRecord record, Object rootInstance, Map<Field, CachedColumn> mapColumns) throws InvalidRecordException {
         for (Map.Entry<Field, CachedColumn> entry : mapColumns.entrySet()) {
             Field field = entry.getKey();
             CachedColumn cachedColumn = entry.getValue();
             try {
+                Object instance = cachedColumn.isWrapped() ? cachedColumn.getParentField().get(rootInstance) : rootInstance;
                 switch (cachedColumn.getColumnType()) {
                     case STRING:
                         record.setString(cachedColumn.getPosition(), (String) field.get(instance));
@@ -347,7 +359,7 @@ public class RecordManager {
                 boolean isSingle = isPositional || isDelimited;
                 boolean isMultiple = isMultiplePositional || isMultipleDelimited;
                 if (!isSingle && !isMultiple) {
-                    throw new JfpaException(clazz, "Class doesn't contain a valid JFPA annotation");
+                    throw new JfpaException(clazz, "Class doesn't contain any valid JFPA annotation");
                 }
                 if (isPositional && isDelimited) {
                     throw new JfpaException(clazz, "Class can't be @Positional and @Delimited at the same time");
@@ -370,7 +382,7 @@ public class RecordManager {
     }
 
     private <T> Type loadSingle(Class<T> clazz, Positional positional, Delimited delimited) {
-        CachedRecord cachedRecord = new CachedRecord(loadColumns(clazz));
+        CachedRecord cachedRecord = loadRecord(clazz);
         Map<Field, CachedColumn> mapColumns = cachedRecord.getMapColumns();
         int pos = 0;
         if (positional != null) {
@@ -467,12 +479,23 @@ public class RecordManager {
         return Type.MULTIPLE;
     }
 
-    private <T> Map<Field, CachedColumn> loadColumns(Class<T> clazz) {
+    private <T> CachedRecord loadRecord(Class<T> clazz) {
         Map<Field, CachedColumn> mapColumns = new LinkedHashMap<Field, CachedColumn>();
+        Map<Field, Class> mapWrappedClasses = new LinkedHashMap<Field, Class>();
+        loadColumns(clazz, mapColumns, mapWrappedClasses, null);
+        return new CachedRecord(mapColumns, mapWrappedClasses);
+    }
+    
+    private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses, Field parentField) {
         for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+            Class columnClass = field.getType();
             Column column = field.getAnnotation(Column.class);
+            WrappedColumns wrappedColumns = field.getAnnotation(WrappedColumns.class);
+            if (column != null && wrappedColumns != null) {
+                throw new JfpaException(clazz, "Only one between @Column and @WrappedColumns should be specified");
+            }
             if (column != null) {
-                Class columnClass = field.getType();
                 ColumnType columnType = ColumnType.valueOf(columnClass);
                 if (columnType == null) {
                     List<Class> interfaces = Arrays.asList(columnClass.getInterfaces());
@@ -482,7 +505,7 @@ public class RecordManager {
                     }
                     columnType = ColumnType.CUSTOM;
                 }
-                CachedColumn cachedColumn = new CachedColumn(field.getName(), columnType, column.offset(), column.invalidateOnError());
+                CachedColumn cachedColumn = new CachedColumn(field.getName(), columnType, column.offset(), column.invalidateOnError(), parentField);
                 cachedColumn.setLength(column.length());
                 boolean hasBooleanFormat = column.booleanFormat().length > 0;
                 boolean hasDateFormat = !Utility.isEmpty(column.dateFormat());
@@ -505,11 +528,15 @@ public class RecordManager {
                         cachedColumn.setFormat(hasDateFormat ? column.dateFormat() : defaultDateFormat);
                         break;
                 }
-                field.setAccessible(true);
                 mapColumns.put(field, cachedColumn);
+            } else if (wrappedColumns != null) {
+                if (parentField != null) {
+                    throw new JfpaException(clazz, "Nested @WrappedColumns are not allowed");
+                }
+                mapWrappedClasses.put(field, columnClass);
+                loadColumns(columnClass, mapColumns, mapWrappedClasses, field);
             }
         }
-        return mapColumns;
     }
 
     private CachedMultipleRecord getCachedMultipleRecord(Class clazz, boolean positional) {

@@ -15,11 +15,13 @@ import java.util.Map;
 public class CachedRecord {
     private SeparatorType separatorType;
     private Map<Field, CachedColumn> mapColumns;
+    private Map<Field, Class> mapWrappedClasses;
     private RecordType recordType;
     private boolean validator;
 
-    public CachedRecord(final Map<Field, CachedColumn> mapColumns) {
+    public CachedRecord(final Map<Field, CachedColumn> mapColumns, final Map<Field, Class> mapWrappedClasses) {
         this.mapColumns = mapColumns;
+        this.mapWrappedClasses = mapWrappedClasses;
     }
 
     public final void setPositional(final int[] lengths) {
@@ -38,6 +40,10 @@ public class CachedRecord {
 
     public final Map<Field, CachedColumn> getMapColumns() {
         return mapColumns;
+    }
+
+    public Map<Field, Class> getMapWrappedClasses() {
+        return mapWrappedClasses;
     }
 
     public final RecordType getRecordType() {

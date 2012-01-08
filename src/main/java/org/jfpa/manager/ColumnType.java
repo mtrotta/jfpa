@@ -21,7 +21,8 @@ public enum ColumnType {
     DOUBLE,
     BIG_DECIMAL,
     BOOLEAN,
-    CUSTOM;
+    CUSTOM,
+    WRAPPED;
 
     private static final Map<Class, ColumnType> VALID_TYPES = new HashMap<Class, ColumnType>() { {
         put(String.class, ColumnType.STRING);
