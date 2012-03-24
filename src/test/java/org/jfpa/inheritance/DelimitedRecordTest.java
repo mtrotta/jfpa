@@ -123,10 +123,6 @@ public class DelimitedRecordTest {
 
         public static final RecordType DEFAULT = new RecordType("T", DELIMITER, NUMBER, new int[]{5,5});
 
-        public FakeDelimitedLengthRecord() {
-            super(DEFAULT);
-        }
-
         public FakeDelimitedLengthRecord(String str) throws InvalidRecordException {
             super(DEFAULT, str);
         }
