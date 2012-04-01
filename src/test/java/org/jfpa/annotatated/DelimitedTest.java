@@ -1,6 +1,6 @@
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.Column;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Delimited;
 import org.jfpa.exception.InvalidRecordException;
 import org.jfpa.exception.JfpaException;
@@ -34,13 +34,56 @@ public class DelimitedTest {
         Assert.assertEquals(Common.delLineA, manager.write(record));
     }
 
+    @Test
+    public void testEnclose() throws Exception {
+        String expected = "\"ABC\";\"DEF\"";
+        Enclosed record = new Enclosed();
+        record.value1 = "ABC";
+        record.value2 = "DEF";
+        Assert.assertEquals(expected, manager.write(record));
+        record = manager.read(expected, Enclosed.class);
+        Assert.assertEquals("ABC", record.value1);
+        Assert.assertEquals("DEF", record.value2);
+        String empty = "\"\";\"DEF\"";
+        record = manager.read(empty, Enclosed.class);
+        Assert.assertNull(record.value1);
+        String not = "ABC;\"DEF\"";
+        try {
+            manager.read(not, Enclosed.class);
+            Assert.fail();
+        } catch (InvalidRecordException ignore) {}
+        String bad = "\"ABC;DEF";
+        try {
+            manager.read(bad, Enclosed.class);
+            Assert.fail();
+        } catch (InvalidRecordException ignore) {}
+        String bad2 = "ABC\";DEF";
+        try {
+            manager.read(bad2, Enclosed.class);
+            Assert.fail();
+        } catch (InvalidRecordException ignore) {}
+        String bad3 = "\";DEF";
+        try {
+            manager.read(bad3, Enclosed.class);
+            Assert.fail();
+        } catch (InvalidRecordException ignore) {}
+    }
+
+    @Delimited(delimiter = ";", stringEnclose = "\"")
+    public static class Enclosed {
+        @TextColumn(length = -1)
+        public String value1;
+        @TextColumn(length = -1)
+        public String value2;
+    }
+
     @Delimited(delimiter = ";")
     public static class BadColumns {
-        @Column
+        @TextColumn(length = -1)
         private String value1;
-        @Column
+        @TextColumn(length = -1)
         private String value2;
-        @Column
+        @TextColumn(length = -1)
         private String value3;
     }
 
@@ -51,11 +94,11 @@ public class DelimitedTest {
 
     @Delimited(delimiter = ";")
     public static class FakeDelimitedLength {
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private String value1;
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private String value2;
-        @Column(length = 5)
+        @TextColumn(length = 5)
         private String value3;
 
         public void setValue2(String value2) {

@@ -28,8 +28,18 @@ public class RecordTypeDTO<T extends FlatRecordDTO> extends RecordType {
         this.factory = factory;
     }
 
+    public RecordTypeDTO(String delimiter, int fieldNumber, String stringEnclose, FlatRecordDTOFactory<T> factory) {
+        super(delimiter, fieldNumber, stringEnclose);
+        this.factory = factory;
+    }
+
     public RecordTypeDTO(String typeString, String delimiter, int fieldNumber, FlatRecordDTOFactory<T> factory) {
         super(typeString, delimiter, fieldNumber);
+        this.factory = factory;
+    }
+
+    public RecordTypeDTO(String typeString, String delimiter, int fieldNumber, String stringEnclose, FlatRecordDTOFactory<T> factory) {
+        super(typeString, delimiter, fieldNumber, stringEnclose);
         this.factory = factory;
     }
 

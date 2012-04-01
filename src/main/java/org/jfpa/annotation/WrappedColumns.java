@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Sometimes it's useful to wrap multiple columns inside
  * a single bean. The WrappedColumns annotation can be used
- * on a field, whose class must contain at least one @Column
+ * on a field, whose class must contain at least one @TextColumn
  */
 @Target(value = ElementType.FIELD)
 @Retention(value = RetentionPolicy.RUNTIME)

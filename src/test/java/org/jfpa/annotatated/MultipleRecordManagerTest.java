@@ -73,9 +73,9 @@ public class MultipleRecordManagerTest {
 
     @Positional
     public static class FirstRecord {
-        @Column(length = 1)
+        @TextColumn(length = 1)
         private String type;
-        @Column(length = 5)
+        @TextColumn(length = 5)
         private String value;
 
         public String getType() {
@@ -89,9 +89,9 @@ public class MultipleRecordManagerTest {
 
     @Positional
     public static class NormalRecord {
-        @Column(length = 1)
+        @TextColumn(length = 1)
         private String type;
-        @Column(length = 5)
+        @TextColumn(length = 5)
         private String value;
 
         public String getType() {

@@ -34,6 +34,32 @@ public class Utility {
         return null;
     }
 
+    public static String buildString(String... strings) {
+        StringBuilder builder = new StringBuilder();
+        for (String string : strings) {
+            if (string != null) {
+                builder.append(string);
+            }
+        }
+        return builder.toString();
+    }
+
+    public static String encloseString(String string, String stringEnclose) {
+        return buildString(stringEnclose, string, stringEnclose);
+    }
+
+    public static String unencloseString(String string, String stringEnclose) {
+        if (string != null) {
+            int begin = string.indexOf(stringEnclose);
+            int end = string.lastIndexOf(stringEnclose);
+            if (begin < 0 || begin == end) {
+                throw new IllegalArgumentException("string not properly enclosed: " + string);
+            }
+            return string.substring(begin + stringEnclose.length(), end);
+        }
+        return null;
+    }
+
     public static String buildDelimitedString(final String delimiter, final Object[] objects) {
         StringBuilder builder = new StringBuilder();
         if (objects != null && objects.length > 0) {

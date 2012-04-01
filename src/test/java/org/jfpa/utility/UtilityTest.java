@@ -102,4 +102,26 @@ public class UtilityTest {
         Assert.assertTrue(Utility.containsAllValues());
         Assert.assertFalse(Utility.containsAllValues("", null));
     }
+
+    @Test
+    public void testEnclose() throws Exception {
+        Assert.assertEquals("\"ABC\"", Utility.encloseString("ABC","\""));
+        Assert.assertEquals("\"\"", Utility.encloseString(null,"\""));
+    }
+
+    @Test
+    public void testUnenclose() throws Exception {
+        Assert.assertNull(Utility.unencloseString(null, "\""));
+        Assert.assertEquals("123", Utility.unencloseString("\"123\"", "\""));
+        Assert.assertEquals("", Utility.unencloseString("\"\"", "\""));
+        try {
+            Utility.unencloseString("\"abc", "\"");
+        } catch (IllegalArgumentException ignore) {}
+        try {
+            Utility.unencloseString("", "\"");
+        } catch (IllegalArgumentException ignore) {}
+        try {
+            Utility.unencloseString("abc\"", "\"");
+        } catch (IllegalArgumentException ignore) {}
+    }
 }

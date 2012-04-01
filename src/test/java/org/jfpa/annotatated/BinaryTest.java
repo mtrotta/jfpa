@@ -1,7 +1,7 @@
 package org.jfpa.annotatated;
 
 import org.jfpa.annotation.Binary;
-import org.jfpa.annotation.Column;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Delimited;
 import org.jfpa.annotation.MultipleDelimited;
 import org.jfpa.exception.InvalidRecordException;
@@ -122,9 +122,9 @@ public class BinaryTest {
     @Binary(pattern = {0x30, 0x31, 0x32})
     @Delimited(delimiter = ":")
     public static class FakeBinaryRecordBytes {
-        @Column
+        @TextColumn(length = -1)
         private String val1;
-        @Column
+        @TextColumn(length = -1)
         private String val2;
 
         public String getVal1() {
@@ -139,9 +139,9 @@ public class BinaryTest {
     @Binary(pattern = {(byte)0xF0, (byte)0xF1, (byte)0xF2}, encoding = "Cp500")
     @Delimited(delimiter = ":")
     public static class FakeBinaryRecordBytesEncoding {
-        @Column
+        @TextColumn(length = -1)
         private String val1;
-        @Column
+        @TextColumn(length = -1)
         private String val2;
 
         public String getVal1() {
@@ -172,9 +172,9 @@ public class BinaryTest {
     @Binary(patternString = "012", encoding = "Cp500")
     @Delimited(delimiter = ":")
     public static class FakeBinaryRecordBytesEncodingString {
-        @Column
+        @TextColumn(length = -1)
         private String val1;
-        @Column
+        @TextColumn(length = -1)
         private String val2;
 
         public String getVal1() {

@@ -71,10 +71,40 @@ public class RecordManager {
         this.defaultBooleanFormat = defaultBooleanFormat;
     }
 
+    public final <T> String writeHeader(Class<T> clazz) throws InvalidRecordException {
+        Type type = loadClass(clazz);
+        String header = null;
+        switch (type) {
+            case SINGLE:
+                header = writeSingle(clazz, createHeader(clazz));
+                break;
+            case MULTIPLE:
+                throw new JfpaException("header for Multiple record type is not supported");
+        }
+        return header;
+    }
+
+    private <T> T createHeader(Class<T> clazz) {
+        try {
+            T instance = clazz.newInstance();
+            CachedRecord cachedRecord = singleClasses.get(clazz);
+            for (Map.Entry<Field, CachedColumn> entry : cachedRecord.getMapColumns().entrySet()) {
+                Field field = entry.getKey();
+                CachedColumn cachedColumn = entry.getValue();
+                field.set(instance, cachedColumn.getDescription());
+            }
+            return instance;
+        } catch (IllegalAccessException e) {
+            throw new JfpaException(clazz, e);
+        } catch (InstantiationException e) {
+            throw new JfpaException(clazz, e);
+        }
+    }
+
     public final <T> T read(String line, Class<T> clazz) throws InvalidRecordException {
         Type type = loadClass(clazz);
         T t = null;
-        switch(type) {
+        switch (type) {
             case SINGLE:
                 t = readSingle(line, clazz);
                 break;
@@ -88,7 +118,7 @@ public class RecordManager {
         Class<?> clazz = instance.getClass();
         Type type = loadClass(clazz);
         String s = null;
-        switch(type) {
+        switch (type) {
             case SINGLE:
                 s = writeSingle(clazz, instance);
                 break;
@@ -159,7 +189,9 @@ public class RecordManager {
                         field.set(instance, typeInstance);
                 }
             } catch (InvalidRecordException e) {
-                if (cachedColumn.isInvalidateOnError()) { throw e; }
+                if (cachedColumn.isInvalidateOnError()) {
+                    throw e;
+                }
             }
         }
         return rootInstance;
@@ -189,8 +221,8 @@ public class RecordManager {
             validator.validate();
         }
         FlatRecord record = cachedRecord.getSeparatorType() == SeparatorType.POSITIONAL
-            ? new PositionalRecord(cachedRecord.getRecordType())
-            : new DelimitedRecord(cachedRecord.getRecordType());
+                ? new PositionalRecord(cachedRecord.getRecordType())
+                : new DelimitedRecord(cachedRecord.getRecordType());
         setFields(record, instance, cachedRecord.getMapColumns());
         return record.toString();
     }
@@ -228,7 +260,9 @@ public class RecordManager {
                         record.setString(cachedColumn.getPosition(), ((Converter) typeInstance).read());
                 }
             } catch (InvalidRecordException e) {
-                if (cachedColumn.isInvalidateOnError()) { throw e; }
+                if (cachedColumn.isInvalidateOnError()) {
+                    throw e;
+                }
             } catch (IllegalAccessException e) {
                 throw new JfpaException(e);
             }
@@ -390,7 +424,7 @@ public class RecordManager {
             int length = 0;
             for (CachedColumn cachedColumn : mapColumns.values()) {
                 if (cachedColumn.getLength() <= 0) {
-                    throw new JfpaException(clazz, String.format("Invalid 'length' for @Column '%s': %d (expected a positive integer)", cachedColumn.getName(), cachedColumn.getLength()));
+                    throw new JfpaException(clazz, String.format("Invalid 'length' for @TextColumn '%s': %d (expected a positive integer)", cachedColumn.getFieldName(), cachedColumn.getLength()));
                 }
                 if (cachedColumn.getOffset() > 0) {
                     pos++;
@@ -420,7 +454,10 @@ public class RecordManager {
                 cachedColumn.setPosition(pos++);
                 lengths.add(cachedColumn.getLength());
             }
-            cachedRecord.setDelimited(delimited.delimiter(), delimited.minColumns() > 0 ? delimited.minColumns() : lengths.size(), Utility.convertArray(lengths));
+            cachedRecord.setDelimited(delimited.delimiter(),
+                    delimited.minColumns() > 0 ? delimited.minColumns() : lengths.size(),
+                    delimited.stringEnclose().isEmpty() ? null : delimited.stringEnclose(),
+                    Utility.convertArray(lengths));
         }
         List<Class<?>> interfaces = Arrays.asList(clazz.getInterfaces());
         cachedRecord.setValidator(interfaces.contains(RecordValidator.class));
@@ -485,39 +522,39 @@ public class RecordManager {
         loadColumns(clazz, mapColumns, mapWrappedClasses, null);
         return new CachedRecord(mapColumns, mapWrappedClasses);
     }
-    
+
     private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses, Field parentField) {
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
             Class columnClass = field.getType();
-            Column column = field.getAnnotation(Column.class);
+            TextColumn textColumn = field.getAnnotation(TextColumn.class);
             WrappedColumns wrappedColumns = field.getAnnotation(WrappedColumns.class);
-            if (column != null && wrappedColumns != null) {
-                throw new JfpaException(clazz, "Only one between @Column and @WrappedColumns should be specified");
+            if (textColumn != null && wrappedColumns != null) {
+                throw new JfpaException(clazz, "Only one between @TextColumn and @WrappedColumns should be specified");
             }
-            if (column != null) {
+            if (textColumn != null) {
                 ColumnType columnType = ColumnType.valueOf(columnClass);
                 if (columnType == null) {
                     List<Class> interfaces = Arrays.asList(columnClass.getInterfaces());
                     if (!interfaces.contains(Converter.class)) {
-                        throw new JfpaException(clazz, String.format("Invalid type %s for @Column '%s', please use one between %s or class %s must implement Converter interface",
+                        throw new JfpaException(clazz, String.format("Invalid type %s for @TextColumn '%s', please use one between %s or class %s must implement Converter interface",
                                 columnClass.getName(), field.getName(), ColumnType.getValidTypes(), columnClass.getSimpleName()));
                     }
                     columnType = ColumnType.CUSTOM;
                 }
-                CachedColumn cachedColumn = new CachedColumn(field.getName(), columnType, column.offset(), column.invalidateOnError(), parentField);
-                cachedColumn.setLength(column.length());
-                boolean hasBooleanFormat = column.booleanFormat().length > 0;
-                boolean hasDateFormat = !Utility.isEmpty(column.dateFormat());
-                switch(columnType) {
+                CachedColumn cachedColumn = new CachedColumn(field.getName(), textColumn.description(), columnType, textColumn.offset(), textColumn.invalidateOnError(), parentField);
+                cachedColumn.setLength(textColumn.length());
+                boolean hasBooleanFormat = textColumn.booleanFormat().length > 0;
+                boolean hasDateFormat = !Utility.isEmpty(textColumn.dateFormat());
+                switch (columnType) {
                     case BOOLEAN:
                         if (hasDateFormat) {
                             throw new JfpaException(clazz, "Invalid 'dateFormat' parameter for boolean, 'booleanFormat' should be used instead");
                         }
                         if (hasBooleanFormat) {
-                            String[] trueFalse = column.booleanFormat();
+                            String[] trueFalse = textColumn.booleanFormat();
                             if (trueFalse.length != 2) {
-                                throw new JfpaException(clazz, "Invalid booleanFormat '" + Arrays.toString(column.booleanFormat()) + "', should be a two valued String[] like {'true,false'}");
+                                throw new JfpaException(clazz, "Invalid booleanFormat '" + Arrays.toString(textColumn.booleanFormat()) + "', should be a two valued String[] like {'true,false'}");
                             }
                             cachedColumn.setBooleanFormat(trueFalse);
                         } else {
@@ -525,7 +562,7 @@ public class RecordManager {
                         }
                         break;
                     case DATE:
-                        cachedColumn.setFormat(hasDateFormat ? column.dateFormat() : defaultDateFormat);
+                        cachedColumn.setFormat(hasDateFormat ? textColumn.dateFormat() : defaultDateFormat);
                         break;
                 }
                 mapColumns.put(field, cachedColumn);
@@ -553,7 +590,7 @@ public class RecordManager {
                         throw new JfpaException(clazz, String.format("SubRecord '%s' can't be a raw List, please use generics", field.getName()));
                     }
                     String className = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].toString();
-                    if("?".equals(className)) {
+                    if ("?".equals(className)) {
                         throw new JfpaException(clazz, String.format("SubRecord '%s' can't be wildcard, please use a specific class", field.getName()));
                     }
                     try {
@@ -589,7 +626,7 @@ public class RecordManager {
     private TypeExtractor loadTypeExtractor(Class clazz) throws IllegalAccessException, InstantiationException {
         TypeExtractor extractor = extractors.get(clazz);
         if (extractor == null) {
-            extractor = (TypeExtractor)clazz.newInstance();
+            extractor = (TypeExtractor) clazz.newInstance();
             extractors.put(clazz, extractor);
         }
         return extractor;

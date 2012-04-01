@@ -51,7 +51,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleString {
-        @Column(length = 1)
+        @TextColumn(length = 1)
         private String value;
 
         public String getValue() {
@@ -71,7 +71,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleDate {
-        @Column(length = 10)
+        @TextColumn(length = 10)
         private Date value;
 
         public Date getValue() {
@@ -87,9 +87,9 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleDateBad {
-        @Column(length = 10)
+        @TextColumn(length = 10)
         private Date badValue;
-        @Column(length = 10, invalidateOnError = false, dateFormat = "ABC")
+        @TextColumn(length = 10, invalidateOnError = false, dateFormat = "ABC")
         private Date badValueNotSoBad;
 
         public void setBadValueNotSoBad(Date badValueNotSoBad) {
@@ -110,7 +110,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleInteger {
-        @Column(length = 2)
+        @TextColumn(length = 2)
         private Integer value;
 
         public Integer getValue() {
@@ -134,7 +134,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleLong {
-        @Column(length = 2)
+        @TextColumn(length = 2)
         private Long value;
 
         public Long getValue() {
@@ -150,7 +150,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleDouble {
-        @Column(length = 4)
+        @TextColumn(length = 4)
         private Double value;
 
         public Double getValue() {
@@ -174,7 +174,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleBigDecimal {
-        @Column(length = 4)
+        @TextColumn(length = 4)
         private BigDecimal value;
 
         public BigDecimal getValue() {
@@ -191,7 +191,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class SimpleBoolean {
-        @Column(length = 5)
+        @TextColumn(length = 5)
         private Boolean value;
 
         public Boolean getValue() {
@@ -224,7 +224,7 @@ public class RecordManagerTest {
 
     @Delimited(delimiter = ";")
     public static class SimpleDelimited {
-        @Column
+        @TextColumn(length = -1)
         private String value;
     }
 
@@ -240,7 +240,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class BadType {
-        @Column(length = 1)
+        @TextColumn(length = 1)
         private Bad value;
     }
 
@@ -251,7 +251,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class BadBooleanFormat {
-        @Column(length = 1, dateFormat = "AB")
+        @TextColumn(length = 1, dateFormat = "AB")
         private Boolean value;
     }
 
@@ -262,7 +262,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class BadBooleanFormatNum {
-        @Column(length = 1, booleanFormat = {"AB","CD","EF"})
+        @TextColumn(length = 1, booleanFormat = {"AB","CD","EF"})
         private Boolean value;
     }
 
@@ -324,7 +324,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class RecordConverter {
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private Bean value;
 
         public Bean getValue() {
@@ -387,7 +387,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class FakePositionalTransient {
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private String val;
 
         private String otherVal;
@@ -465,7 +465,7 @@ public class RecordManagerTest {
 
     @Positional
     public static class BadStatic {
-        @Column(length = 1)
+        @TextColumn(length = 1)
         private static String value;
 
     }

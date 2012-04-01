@@ -1,6 +1,6 @@
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.Column;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Delimited;
 
 import java.math.BigDecimal;
@@ -14,29 +14,29 @@ import java.util.Date;
  */
 @Delimited(delimiter = ";")
 public class FakeDelimitedRecordB implements CommonRecord {
-    @Column
+    @TextColumn(length = -1)
     private String type;
-    @Column
+    @TextColumn(length = -1)
     private String f1;
-    @Column
+    @TextColumn(length = -1)
     private String f2;
-    @Column(offset = 1)
+    @TextColumn(length = -1, offset = 1)
     private String f4;
-    @Column
+    @TextColumn(length = -1)
     private Date date;
-    @Column(dateFormat = "yyyy/MM/dd")
+    @TextColumn(length = -1, dateFormat = "yyyy/MM/dd")
     private Date dateFormatted;
-    @Column
+    @TextColumn(length = -1)
     private Long longVal;
-    @Column
+    @TextColumn(length = -1)
     private BigDecimal bigDecimal;
-    @Column
+    @TextColumn(length = -1)
     private Boolean bool;
-    @Column(booleanFormat = {"T","F"})
+    @TextColumn(length = -1, booleanFormat = {"T","F"})
     private Boolean boolFormatted;
-    @Column
+    @TextColumn(length = -1)
     private String blank;
-    @Column
+    @TextColumn(length = -1)
     private String last;
 
     public String getType() {

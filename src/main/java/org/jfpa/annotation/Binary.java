@@ -41,7 +41,7 @@ public @interface Binary {
     String patternString() default "";
 
     /**
-     * String encoding name used to convert the binary stream to String.
+     * String encoding description used to convert the binary stream to String.
      */
     String encoding() default "";
 }

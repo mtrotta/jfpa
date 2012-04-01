@@ -22,11 +22,19 @@ public abstract class AbstractRecord implements FlatRecord {
     private RecordType recordType;
 
     public String getString(int pos) throws InvalidRecordException {
-        return Utility.trimString(getPos(pos));
+        try {
+            return Utility.trimString(getPos(pos));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRecordException("Invalid String: " + e.getMessage(), toString());
+        }
     }
 
     public void setString(int pos, String value) throws InvalidRecordException {
-        setPos(pos, value);
+        try {
+            setPos(pos, value);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRecordException("Invalid String: " + e.getMessage(), toString());
+        }
     }
 
     public Date getDate(int pos, String format) throws InvalidRecordException {

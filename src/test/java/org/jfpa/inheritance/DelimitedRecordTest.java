@@ -132,4 +132,73 @@ public class DelimitedRecordTest {
     public void testLength() throws Exception {
         new FakeDelimitedLengthRecord("123456;12345");
     }
+
+    public static class FakeDelimitedRecordEnclosed extends DelimitedRecord {
+
+        private static final int NUMBER = 2;
+        private static final String DELIMITER = ";";
+        private static final String ENCLOSE = "\"";
+
+        public static final RecordType DEFAULT = new RecordType(DELIMITER, NUMBER, ENCLOSE);
+
+        public FakeDelimitedRecordEnclosed() {
+            super(DEFAULT);
+        }
+
+        public FakeDelimitedRecordEnclosed(String str) throws InvalidRecordException {
+            super(DEFAULT, str);
+        }
+    }
+
+    @Test
+    public void testEnclose() throws Exception {
+        FlatRecord record = new FakeDelimitedRecordEnclosed("\"123456\";\"12345\"");
+        Assert.assertEquals("123456", record.getString(0));
+    }
+
+    public static class FakeDelimitedRecordEnclosedLength extends DelimitedRecord {
+
+        private static final int NUMBER = 2;
+        private static final String DELIMITER = ";";
+        private static final String ENCLOSE = "\"";
+
+        public static final RecordType DEFAULT = new RecordType(DELIMITER, NUMBER, ENCLOSE, new int[]{5,5});
+
+        public FakeDelimitedRecordEnclosedLength() {
+            super(DEFAULT);
+        }
+
+        public FakeDelimitedRecordEnclosedLength(String str) throws InvalidRecordException {
+            super(DEFAULT, str);
+        }
+    }
+
+    @Test(expected = InvalidRecordException.class)
+    public void testEncloseLength() throws Exception {
+        FlatRecord record = new FakeDelimitedRecordEnclosedLength("\"123456\";\"12345\"");
+        record.getString(0);
+    }
+
+    public static class FakeDelimitedRecordEnclosedDto extends DelimitedRecord {
+
+        private static final int NUMBER = 1;
+        private static final String DELIMITER = ";";
+
+        public static final RecordTypeDTO<Dto> DEFAULT = new RecordTypeDTO<Dto>(DELIMITER, NUMBER, "\"", new FlatRecordDTOFactory<Dto>() {
+            public Dto createDTO(FlatRecord record) {
+                return new Dto(record);
+            }
+        });
+
+        public FakeDelimitedRecordEnclosedDto(String str) throws InvalidRecordException {
+            super(DEFAULT, str);
+        }
+    }
+
+    @Test
+    public void testEnclosedDto() throws Exception {
+        FakeDelimitedRecordEnclosedDto record = new FakeDelimitedRecordEnclosedDto("\"Test\"");
+        Dto dto = record.createDTO(FakeDelimitedRecordEnclosedDto.DEFAULT);
+        Assert.assertEquals("Test", dto.getValue());
+    }
 }

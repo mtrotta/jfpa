@@ -16,6 +16,7 @@ public class DelimitedRecord extends AbstractRecord {
 
     private String[] columns;
     private String delimiter;
+    private String stringEnclose;
     private int[] lengths;
 
     public DelimitedRecord() { }
@@ -24,6 +25,7 @@ public class DelimitedRecord extends AbstractRecord {
         setRecordType(recordType);
         this.columns = new String[recordType.getColumns()];
         this.delimiter = recordType.getDelimiter();
+        this.stringEnclose = recordType.getStringEnclose();
         this.lengths = recordType.getLengths();
     }
 
@@ -35,6 +37,7 @@ public class DelimitedRecord extends AbstractRecord {
         checkString(str);
         setRecordType(recordType);
         delimiter = recordType.getDelimiter();
+        stringEnclose = recordType.getStringEnclose();
         lengths = recordType.getLengths();
         columns = str.split(Pattern.quote(delimiter), -1);
         if (columns.length < recordType.getColumns()) {
@@ -49,19 +52,23 @@ public class DelimitedRecord extends AbstractRecord {
 
     @Override
     protected String getPos(int pos) throws InvalidRecordException {
-        checkLength(pos, columns[pos]);
-        return columns[pos];
+        return checkLength(pos, stringEnclose == null ? columns[pos] : Utility.unencloseString(columns[pos], stringEnclose));
     }
 
     @Override
     protected void setPos(int pos, String value) throws InvalidRecordException {
+        if (stringEnclose != null) {
+            value = Utility.encloseString(value, stringEnclose);
+        }
         checkLength(pos, value);
         this.columns[pos] = value;
     }
 
-    private void checkLength(int pos, String value) throws InvalidRecordException {
-        if (lengths != null && lengths[pos] > 0 && value != null && value.length() > lengths[pos])
+    private String checkLength(int pos, String value) throws InvalidRecordException {
+        if (lengths != null && lengths[pos] > 0 && value != null && value.length() > lengths[pos]) {
             throw new InvalidRecordException("Value too large for pos " + pos + ": '" + value + "' has length " + value.length() + " (max: " + lengths[pos] + ")");
+        }
+        return value;
     }
 
     @Override

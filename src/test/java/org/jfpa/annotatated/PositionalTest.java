@@ -1,6 +1,6 @@
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.Column;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Positional;
 import org.jfpa.exception.InvalidRecordException;
 import org.jfpa.exception.JfpaException;
@@ -34,11 +34,11 @@ public class PositionalTest {
 
     @Positional
     public static class FakePositionalLength {
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private String value1;
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private String value2;
-        @Column(length = 5)
+        @TextColumn(length = 5)
         private String value3;
     }
 
@@ -54,30 +54,17 @@ public class PositionalTest {
 
     @Positional
     public static class BadPositionalLength {
-        @Column(length = 0)
+        @TextColumn(length = 0)
         private String value1;
-        @Column(length = 3)
+        @TextColumn(length = 3)
         private String value2;
-        @Column(length = 7)
+        @TextColumn(length = 7)
         private String value3;
     }
 
     @Test(expected = JfpaException.class)
     public void testBadLength() throws Exception {
         manager.loadClass(BadPositionalLength.class);
-    }
-
-    @Positional
-    public static class BadPositionalColumns {
-        @Column
-        private String value1;
-        @Column
-        private String value2;
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadColumns() throws Exception {
-        manager.loadClass(BadPositionalColumns.class);
     }
 
     @Positional(minLength = 10)
@@ -91,7 +78,7 @@ public class PositionalTest {
 
     @Positional(minLength = 10)
     public static class FakePositionalMinUseless {
-        @Column(length = 15)
+        @TextColumn(length = 15)
         private String val;
     }
 

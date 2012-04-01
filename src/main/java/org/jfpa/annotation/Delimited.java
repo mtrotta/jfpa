@@ -43,4 +43,10 @@ public @interface Delimited {
      * {@link org.jfpa.exception.InvalidRecordException}
      */
     int minColumns() default 0;
+
+    /**
+     * String sequence used to enclose {@link org.jfpa.annotation.TextColumn}
+     * of type String
+     */
+    String stringEnclose() default "";
 }

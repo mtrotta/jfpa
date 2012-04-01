@@ -29,9 +29,9 @@ public class CachedRecord {
         this.recordType = new RecordType(lengths);
     }
 
-    public final void setDelimited(final String delimiter, final int columns, final int[] lengths) {
+    public final void setDelimited(final String delimiter, final int columns, final String stringEnclose, final int[] lengths) {
         this.separatorType = SeparatorType.DELIMITED;
-        this.recordType = new RecordType(delimiter, columns, lengths);
+        this.recordType = new RecordType(delimiter, columns, stringEnclose, lengths);
     }
 
     public final SeparatorType getSeparatorType() {

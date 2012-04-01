@@ -1,6 +1,6 @@
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.Column;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Positional;
 
 import java.math.BigDecimal;
@@ -8,29 +8,29 @@ import java.util.Date;
 
 @Positional
 public class FakePositionalRecordA implements CommonRecord {
-    @Column(length = 1)
+    @TextColumn(length = 1)
     private String type;
-    @Column(length = 6)
+    @TextColumn(length = 6)
     private String f1;
-    @Column(length = 6)
+    @TextColumn(length = 6)
     private String f2;
-    @Column(length = 10, offset = 6)
+    @TextColumn(length = 10, offset = 6)
     private String f4;
-    @Column(length = 10)
+    @TextColumn(length = 10)
     private Date date;
-    @Column(length = 10, dateFormat = "yyyy/MM/dd")
+    @TextColumn(length = 10, dateFormat = "yyyy/MM/dd")
     private Date dateFormatted;
-    @Column(length = 5)
+    @TextColumn(length = 5)
     private Long longVal;
-    @Column(length = 5)
+    @TextColumn(length = 5)
     private BigDecimal bigDecimal;
-    @Column(length = 1)
+    @TextColumn(length = 1)
     private Boolean bool;
-    @Column(length = 1, booleanFormat = {"T","F"})
+    @TextColumn(length = 1, booleanFormat = {"T","F"})
     private Boolean boolFormatted;
-    @Column(length = 2)
+    @TextColumn(length = 2)
     private String blank;
-    @Column(length = 4)
+    @TextColumn(length = 4)
     private String last;
 
     public String getType() {

@@ -18,6 +18,7 @@ public class RecordType {
     private int[] lengths;
     private String delimiter;
     private Integer columns;
+    private String stringEnclose;
 
     public RecordType(final int[] lengths) {
         this.positions = convertLengthsToPositions(lengths);
@@ -34,8 +35,18 @@ public class RecordType {
         this.columns = columns;
     }
 
+    public RecordType(final String delimiter, final int columns, final String stringEnclose) {
+        this(delimiter, columns);
+        this.stringEnclose = stringEnclose;
+    }
+
     public RecordType(final String delimiter, final int columns, final int[] lengths) {
         this(delimiter, columns);
+        this.lengths = lengths;
+    }
+
+    public RecordType(final String delimiter, final int columns, final String stringEnclose, final int[] lengths) {
+        this(delimiter, columns, stringEnclose);
         this.lengths = lengths;
     }
 
@@ -44,8 +55,18 @@ public class RecordType {
         this.typeString = typeString;
     }
 
+    public RecordType(final String typeString, final String delimiter, final int columns, final String stringEnclose) {
+        this(delimiter, columns, stringEnclose);
+        this.typeString = typeString;
+    }
+
+    public RecordType(final String typeString, final String delimiter, final int columns, final String stringEnclose, final int[] lengths) {
+        this(delimiter, columns, stringEnclose,lengths);
+        this.typeString = typeString;
+    }
+
     public RecordType(final String typeString, final String delimiter, final int columns, final int[] lengths) {
-        this(delimiter, columns, lengths);
+        this(delimiter, columns, null,lengths);
         this.typeString = typeString;
     }
 
@@ -75,6 +96,10 @@ public class RecordType {
 
     public String getDelimiter() {
         return delimiter;
+    }
+
+    public String getStringEnclose() {
+        return stringEnclose;
     }
 
     public static Map<String, RecordType> buildMap(RecordType... types) {
