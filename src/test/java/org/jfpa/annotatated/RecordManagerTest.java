@@ -4,10 +4,10 @@ import org.jfpa.annotation.*;
 import org.jfpa.exception.InvalidRecordException;
 import org.jfpa.exception.JfpaException;
 import org.jfpa.interfaces.Converter;
-import org.jfpa.utility.Formats;
 import org.jfpa.interfaces.TypeExtractor;
 import org.jfpa.manager.NullExtractor;
 import org.jfpa.manager.RecordManager;
+import org.jfpa.utility.Formats;
 import org.jfpa.utility.Utility;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,6 +22,8 @@ import java.util.Date;
  * Date: 09/10/11
  */
 public class RecordManagerTest {
+
+    private static final String NULL_LINE = null;
 
     private RecordManager manager = new RecordManager();
 
@@ -219,7 +221,7 @@ public class RecordManagerTest {
 
     @Test(expected = InvalidRecordException.class)
     public void testReadNull() throws Exception {
-        manager.read(null, SimpleString.class);
+        manager.read(NULL_LINE, SimpleString.class);
     }
 
     @Delimited(delimiter = ";")
@@ -230,7 +232,7 @@ public class RecordManagerTest {
 
     @Test(expected = InvalidRecordException.class)
     public void testReadNullDelimited() throws Exception {
-        manager.read(null, SimpleDelimited.class);
+        manager.read(NULL_LINE, SimpleDelimited.class);
     }
 
     @Test(expected = NullPointerException.class)
@@ -382,7 +384,7 @@ public class RecordManagerTest {
 
     @Test(expected = NullPointerException.class)
     public void testNull() throws Exception {
-        manager.read(null, null);
+        manager.read(NULL_LINE, null);
     }
 
     @Positional
@@ -477,4 +479,23 @@ public class RecordManagerTest {
         Assert.assertEquals(value, BadStatic.value);
     }
 
+    @Delimited(delimiter = ";")
+    public static class ExcludeDelimited {
+        @TextColumn(length = -1)
+        public String value1;
+        @TextColumn(length = -1)
+        private String value2;
+        @TextColumn(length = -1)
+        private String value3;
+    }
+
+    @Test
+    public void testExclude() throws Exception {
+        ExcludeDelimited record = new ExcludeDelimited();
+        record.value1 = "1";
+        record.value2 = "2";
+        record.value3 = "3";
+        manager.loadClass(ExcludeDelimited.class, "value2");
+        Assert.assertEquals("1;3", manager.write(record));
+    }
 }

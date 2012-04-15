@@ -24,11 +24,7 @@ import org.jfpa.cache.CachedSubRecord;
 import org.jfpa.exception.InvalidMultipleRecordException;
 import org.jfpa.exception.InvalidRecordException;
 import org.jfpa.exception.JfpaException;
-import org.jfpa.interfaces.Converter;
-import org.jfpa.interfaces.FlatRecord;
-import org.jfpa.interfaces.MultipleRecordValidator;
-import org.jfpa.interfaces.RecordValidator;
-import org.jfpa.interfaces.TypeExtractor;
+import org.jfpa.interfaces.*;
 import org.jfpa.record.DelimitedRecord;
 import org.jfpa.record.PositionalRecord;
 import org.jfpa.type.RecordType;
@@ -38,14 +34,7 @@ import org.jfpa.utility.Utility;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RecordManager {
 
@@ -54,6 +43,7 @@ public class RecordManager {
     private Map<Class, CachedMultipleRecord> multipleClasses = new HashMap<Class, CachedMultipleRecord>();
     private Map<RecordType, Class> typeClasses = new HashMap<RecordType, Class>();
     private Map<Class, TypeExtractor> extractors = new HashMap<Class, TypeExtractor>();
+    private Map<Class, Set<String>> excludedColumns = new HashMap<Class, Set<String>>();
 
     private String defaultDateFormat;
     private String[] defaultBooleanFormat;
@@ -378,7 +368,7 @@ public class RecordManager {
         }
     }
 
-    public final synchronized <T> Type loadClass(Class<T> clazz) {
+    public final synchronized <T> Type loadClass(Class<T> clazz, String... excludeColumns) {
         try {
             Type type = knownClasses.get(clazz);
             if (type == null) {
@@ -404,6 +394,9 @@ public class RecordManager {
                 if (isSingle && isMultiple) {
                     throw new JfpaException(clazz, "Class can't be @Positional|@Delimited and @MultiplePositional|@MultipleDelimited at the same time");
                 }
+                Set<String> excluded = new HashSet<String>();
+                Collections.addAll(excluded, excludeColumns);
+                excludedColumns.put(clazz, excluded);
                 type = isSingle ? loadSingle(clazz, positional, delimited) : loadMultiple(clazz, multiplePositional, multipleDelimited);
                 knownClasses.put(clazz, type);
             }
@@ -519,12 +512,15 @@ public class RecordManager {
     private <T> CachedRecord loadRecord(Class<T> clazz) {
         Map<Field, CachedColumn> mapColumns = new LinkedHashMap<Field, CachedColumn>();
         Map<Field, Class> mapWrappedClasses = new LinkedHashMap<Field, Class>();
-        loadColumns(clazz, mapColumns, mapWrappedClasses, null);
+        loadColumns(clazz, mapColumns, mapWrappedClasses, excludedColumns.get(clazz), null);
         return new CachedRecord(mapColumns, mapWrappedClasses);
     }
 
-    private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses, Field parentField) {
+    private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses, Set<String> excluded, Field parentField) {
         for (Field field : clazz.getDeclaredFields()) {
+            if (excluded.contains(field.getName())) {
+                continue;
+            }
             field.setAccessible(true);
             Class columnClass = field.getType();
             TextColumn textColumn = field.getAnnotation(TextColumn.class);
@@ -571,7 +567,7 @@ public class RecordManager {
                     throw new JfpaException(clazz, "Nested @WrappedColumns are not allowed");
                 }
                 mapWrappedClasses.put(field, columnClass);
-                loadColumns(columnClass, mapColumns, mapWrappedClasses, field);
+                loadColumns(columnClass, mapColumns, mapWrappedClasses, excluded, field);
             }
         }
     }
