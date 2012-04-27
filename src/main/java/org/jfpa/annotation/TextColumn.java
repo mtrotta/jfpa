@@ -40,10 +40,10 @@ public @interface TextColumn {
     int length();
 
     /**
-     * Description of column.
+     * Name of column.
      * Used to compose header, if requested
      */
-    String description() default "";
+    String name() default "";
 
     /**
      * Specifies the offset for column from previous column, or beginning (if first).

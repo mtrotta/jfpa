@@ -16,12 +16,14 @@ public class CachedRecord {
     private SeparatorType separatorType;
     private Map<Field, CachedColumn> mapColumns;
     private Map<Field, Class> mapWrappedClasses;
+    private Map<String, CachedColumn> mapNames;
     private RecordType recordType;
     private boolean validator;
 
-    public CachedRecord(final Map<Field, CachedColumn> mapColumns, final Map<Field, Class> mapWrappedClasses) {
+    public CachedRecord(final Map<Field, CachedColumn> mapColumns, final Map<Field, Class> mapWrappedClasses, final Map<String, CachedColumn> mapNames) {
         this.mapColumns = mapColumns;
         this.mapWrappedClasses = mapWrappedClasses;
+        this.mapNames = mapNames;
     }
 
     public final void setPositional(final int[] lengths) {
@@ -44,6 +46,10 @@ public class CachedRecord {
 
     public Map<Field, Class> getMapWrappedClasses() {
         return mapWrappedClasses;
+    }
+
+    public Map<String, CachedColumn> getMapNames() {
+        return mapNames;
     }
 
     public final RecordType getRecordType() {

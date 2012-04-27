@@ -498,4 +498,45 @@ public class RecordManagerTest {
         manager.loadClass(ExcludeDelimited.class, "value2");
         Assert.assertEquals("1;3", manager.write(record));
     }
+
+    @Delimited(delimiter = ";")
+    public static class HeaderDelimited {
+        @TextColumn(length = -1, name = "COL1")
+        private String col1;
+
+        @TextColumn(length = -1, name = "COL2")
+        private String col2;
+
+    }
+
+    @Test
+    public void testMapHeader() throws Exception {
+        try {
+            manager.mapFromHeader(HeaderDelimited.class, "A;B");
+            Assert.fail();
+        } catch (InvalidRecordException ignore) {}
+        manager.mapFromHeader(HeaderDelimited.class, "COL1;COL2");
+        HeaderDelimited record = manager.read("A;B", HeaderDelimited.class);
+        Assert.assertEquals("A", record.col1);
+        Assert.assertEquals("B", record.col2);
+    }
+
+    @Delimited(delimiter = ";")
+    public static class BadHeaderDelimited {
+        @TextColumn(length = -1, name = "COL1")
+        private String col1;
+
+        @TextColumn(length = -1)
+        private String col2;
+    }
+
+    @Test(expected = JfpaException.class)
+    public void testBadHeaderColumns() throws Exception {
+        manager.mapFromHeader(BadHeaderDelimited.class, "");
+    }
+
+    @Test(expected = JfpaException.class)
+    public void testBadHeaderMultiple() throws Exception {
+        manager.mapFromHeader(FakeDelimitedExtractor.class, "");
+    }
 }

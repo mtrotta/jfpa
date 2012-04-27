@@ -36,11 +36,11 @@ public class HeaderTest {
 
     @Delimited(delimiter = ";")
     public static class HeaderDelimited {
-        @TextColumn(length = -1, description = "COL1")
+        @TextColumn(length = -1, name = "COL1")
         private String value1;
-        @TextColumn(length = -1, description = "COL2")
+        @TextColumn(length = -1, name = "COL2")
         private String value2;
-        @TextColumn(length = -1, description = "COL3")
+        @TextColumn(length = -1, name = "COL3")
         private String value3;
     }
 
@@ -51,11 +51,11 @@ public class HeaderTest {
 
     @Positional
     public static class HeaderPositional {
-        @TextColumn(length = 4, description = "COL1")
+        @TextColumn(length = 4, name = "COL1")
         private String value1;
-        @TextColumn(length = 4, description = "COL2")
+        @TextColumn(length = 4, name = "COL2")
         private String value2;
-        @TextColumn(length = 4, description = "COL3")
+        @TextColumn(length = 4, name = "COL3")
         private String value3;
     }
 

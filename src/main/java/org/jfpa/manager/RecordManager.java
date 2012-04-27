@@ -81,13 +81,45 @@ public class RecordManager {
             for (Map.Entry<Field, CachedColumn> entry : cachedRecord.getMapColumns().entrySet()) {
                 Field field = entry.getKey();
                 CachedColumn cachedColumn = entry.getValue();
-                field.set(instance, cachedColumn.getDescription());
+                field.set(instance, cachedColumn.getName());
             }
             return instance;
         } catch (IllegalAccessException e) {
             throw new JfpaException(clazz, e);
         } catch (InstantiationException e) {
             throw new JfpaException(clazz, e);
+        }
+    }
+
+    public <T> void mapFromHeader(Class<T> clazz, String header) throws InvalidRecordException {
+        Type type = loadClass(clazz);
+        switch (type) {
+            case SINGLE:
+                CachedRecord cachedRecord = singleClasses.get(clazz);
+                Map<String, CachedColumn> mapNames = cachedRecord.getMapNames();
+                Map<Field, CachedColumn> mapColumns = cachedRecord.getMapColumns();
+                if (mapNames.size() < mapColumns.size()) {
+                    mapColumns.values().removeAll(mapNames.values());
+                    throw new JfpaException("unable to map from header, record contains unnamed columns: " + mapColumns.values());
+                }
+                FlatRecord record = getFlatRecord(header, cachedRecord.getSeparatorType(), cachedRecord.getRecordType());
+                Set<String> found = new LinkedHashSet<String>();
+                for (int i = 0; i < record.getColumns(); i++) {
+                    String name = record.getString(i);
+                    CachedColumn cachedColumn = mapNames.get(name);
+                    if (cachedColumn != null) {
+                        cachedColumn.setPosition(i);
+                        found.add(name);
+                    }
+                }
+                if (found.size() < mapNames.size()) {
+                    Set<String> missing = new LinkedHashSet<String>(mapNames.keySet());
+                    missing.removeAll(found);
+                    throw new InvalidRecordException("not all columns have been mapped from header: " + missing);
+                }
+                break;
+            case MULTIPLE:
+                throw new JfpaException("header mapping for Multiple record type is not supported");
         }
     }
 
@@ -512,11 +544,13 @@ public class RecordManager {
     private <T> CachedRecord loadRecord(Class<T> clazz) {
         Map<Field, CachedColumn> mapColumns = new LinkedHashMap<Field, CachedColumn>();
         Map<Field, Class> mapWrappedClasses = new LinkedHashMap<Field, Class>();
-        loadColumns(clazz, mapColumns, mapWrappedClasses, excludedColumns.get(clazz), null);
-        return new CachedRecord(mapColumns, mapWrappedClasses);
+        Map<String, CachedColumn> mapNames = new LinkedHashMap<String, CachedColumn>();
+        loadColumns(clazz, mapColumns, mapWrappedClasses, mapNames, excludedColumns.get(clazz), null);
+        return new CachedRecord(mapColumns, mapWrappedClasses, mapNames);
     }
 
-    private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses, Set<String> excluded, Field parentField) {
+    private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses,
+                             Map<String, CachedColumn> mapNames, Set<String> excluded, Field parentField) {
         for (Field field : clazz.getDeclaredFields()) {
             if (excluded.contains(field.getName())) {
                 continue;
@@ -538,7 +572,7 @@ public class RecordManager {
                     }
                     columnType = ColumnType.CUSTOM;
                 }
-                CachedColumn cachedColumn = new CachedColumn(field.getName(), textColumn.description(), columnType, textColumn.offset(), textColumn.invalidateOnError(), parentField);
+                CachedColumn cachedColumn = new CachedColumn(field.getName(), textColumn.name(), columnType, textColumn.offset(), textColumn.invalidateOnError(), parentField);
                 cachedColumn.setLength(textColumn.length());
                 boolean hasBooleanFormat = textColumn.booleanFormat().length > 0;
                 boolean hasDateFormat = !Utility.isEmpty(textColumn.dateFormat());
@@ -562,12 +596,15 @@ public class RecordManager {
                         break;
                 }
                 mapColumns.put(field, cachedColumn);
+                if (!textColumn.name().isEmpty()) {
+                    mapNames.put(textColumn.name(), cachedColumn);
+                }
             } else if (wrappedColumns != null) {
                 if (parentField != null) {
                     throw new JfpaException(clazz, "Nested @WrappedColumns are not allowed");
                 }
                 mapWrappedClasses.put(field, columnClass);
-                loadColumns(columnClass, mapColumns, mapWrappedClasses, excluded, field);
+                loadColumns(columnClass, mapColumns, mapWrappedClasses, mapNames, excluded, field);
             }
         }
     }

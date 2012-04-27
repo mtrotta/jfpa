@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  */
 public class CachedColumn {
     private String fieldName;
-    private String description;
+    private String name;
     private ColumnType columnType;
     private int length;
     private int offset;
@@ -22,9 +22,9 @@ public class CachedColumn {
     private boolean invalidateOnError;
     private Field parentField;
 
-    public CachedColumn(final String fieldName, final String description, final ColumnType columnType, final int offset, final boolean invalidateOnError, final Field parentField) {
+    public CachedColumn(final String fieldName, final String name, final ColumnType columnType, final int offset, final boolean invalidateOnError, final Field parentField) {
         this.fieldName = fieldName;
-        this.description = description;
+        this.name = name;
         this.offset = offset;
         this.columnType = columnType;
         this.invalidateOnError = invalidateOnError;
@@ -35,8 +35,8 @@ public class CachedColumn {
         return fieldName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }
 
     public final ColumnType getColumnType() {
@@ -89,5 +89,10 @@ public class CachedColumn {
 
     public final boolean isWrapped() {
         return parentField != null;
+    }
+
+    @Override
+    public String toString() {
+        return fieldName;
     }
 }
