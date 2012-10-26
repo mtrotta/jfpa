@@ -4,6 +4,8 @@ import org.jfpa.manager.SeparatorType;
 import org.jfpa.type.RecordType;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,13 +19,17 @@ public class CachedRecord {
     private Map<Field, CachedColumn> mapColumns;
     private Map<Field, Class> mapWrappedClasses;
     private Map<String, CachedColumn> mapNames;
+    private List<Method> postReadMethods;
+    private List<Method> preWriteMethods;
     private RecordType recordType;
     private boolean validator;
 
-    public CachedRecord(final Map<Field, CachedColumn> mapColumns, final Map<Field, Class> mapWrappedClasses, final Map<String, CachedColumn> mapNames) {
+    public CachedRecord(final Map<Field, CachedColumn> mapColumns, final Map<Field, Class> mapWrappedClasses, final Map<String, CachedColumn> mapNames, final List<Method> postReadMethods, final List<Method> preWriteMethods) {
         this.mapColumns = mapColumns;
         this.mapWrappedClasses = mapWrappedClasses;
         this.mapNames = mapNames;
+        this.postReadMethods = postReadMethods;
+        this.preWriteMethods = preWriteMethods;
     }
 
     public final void setPositional(final int[] lengths) {
@@ -62,5 +68,13 @@ public class CachedRecord {
 
     public final void setValidator(final boolean validator) {
         this.validator = validator;
+    }
+
+    public List<Method> getPostReadMethods() {
+        return postReadMethods;
+    }
+
+    public List<Method> getPreWriteMethods() {
+        return preWriteMethods;
     }
 }

@@ -31,7 +31,10 @@ import org.jfpa.type.RecordType;
 import org.jfpa.utility.Formats;
 import org.jfpa.utility.Utility;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.*;
@@ -228,7 +231,12 @@ public class RecordManager {
                 RecordValidator validator = RecordValidator.class.cast(instance);
                 validator.validate();
             }
+            for (Method method : cachedRecord.getPostReadMethods()) {
+                method.invoke(instance);
+            }
             return instance;
+        } catch (InvocationTargetException e) {
+            throw new JfpaException(clazz, e);
         } catch (IllegalAccessException e) {
             throw new JfpaException(clazz, e);
         } catch (InstantiationException e) {
@@ -241,6 +249,15 @@ public class RecordManager {
         if (cachedRecord.isValidator()) {
             RecordValidator validator = RecordValidator.class.cast(instance);
             validator.validate();
+        }
+        try {
+            for (Method method : cachedRecord.getPreWriteMethods()) {
+                method.invoke(instance);
+            }
+        } catch (IllegalAccessException e) {
+            throw new JfpaException(clazz, e);
+        } catch (InvocationTargetException e) {
+            throw new JfpaException(clazz, e);
         }
         FlatRecord record = cachedRecord.getSeparatorType() == SeparatorType.POSITIONAL
                 ? new PositionalRecord(cachedRecord.getRecordType())
@@ -545,8 +562,11 @@ public class RecordManager {
         Map<Field, CachedColumn> mapColumns = new LinkedHashMap<Field, CachedColumn>();
         Map<Field, Class> mapWrappedClasses = new LinkedHashMap<Field, Class>();
         Map<String, CachedColumn> mapNames = new LinkedHashMap<String, CachedColumn>();
+        List<Method> postReadMethods = new ArrayList<Method>();
+        List<Method> preWriteMethods = new ArrayList<Method>();
         loadColumns(clazz, mapColumns, mapWrappedClasses, mapNames, excludedColumns.get(clazz), null);
-        return new CachedRecord(mapColumns, mapWrappedClasses, mapNames);
+        loadMethods(clazz, postReadMethods, preWriteMethods);
+        return new CachedRecord(mapColumns, mapWrappedClasses, mapNames, postReadMethods, preWriteMethods);
     }
 
     private void loadColumns(Class<?> clazz, Map<Field, CachedColumn> mapColumns, Map<Field, Class> mapWrappedClasses,
@@ -606,6 +626,23 @@ public class RecordManager {
                 mapWrappedClasses.put(field, columnClass);
                 loadColumns(columnClass, mapColumns, mapWrappedClasses, mapNames, excluded, field);
             }
+        }
+    }
+
+    private void loadMethods(Class<?> clazz, List<Method> postReadMethods, List<Method> preWriteMethods) {
+        for (Method method : clazz.getDeclaredMethods()) {
+            checkMethodAnnotation(clazz, method, PostRead.class, postReadMethods);
+            checkMethodAnnotation(clazz, method, PreWrite.class, preWriteMethods);
+        }
+    }
+
+    private void checkMethodAnnotation(Class<?> clazz, Method method, Class<? extends Annotation> annotation, List<Method> methodList) {
+        if (method.isAnnotationPresent(annotation)) {
+            if (method.getParameterTypes().length > 0) {
+                throw new JfpaException(clazz, String.format("@%s method '%s'  can't have parameters", annotation.getName(), method.getName()));
+            }
+            method.setAccessible(true);
+            methodList.add(method);
         }
     }
 

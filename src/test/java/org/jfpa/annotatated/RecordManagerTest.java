@@ -506,7 +506,6 @@ public class RecordManagerTest {
 
         @TextColumn(length = -1, name = "COL2")
         private String col2;
-
     }
 
     @Test
@@ -538,5 +537,62 @@ public class RecordManagerTest {
     @Test(expected = JfpaException.class)
     public void testBadHeaderMultiple() throws Exception {
         manager.mapFromHeader(FakeDelimitedExtractor.class, "");
+    }
+
+    @Delimited(delimiter = ";")
+    public static class RecordPostMethod {
+        public static final String PRE = "pre";
+        public static final String POST = "post";
+        @TextColumn(length = -1)
+        private String col1;
+        @TextColumn(length = -1)
+        private String col2;
+        @PreWrite
+        private void preWrite() {
+            col2 = col1 + PRE;
+        }
+        @PostRead
+        private void postRead() {
+            col2 = col1 + POST;
+        }
+    }
+
+    @Test
+    public void testPostMethods() throws Exception {
+        RecordPostMethod record = new RecordPostMethod();
+        String val = "1";
+        record.col1 = val;
+        String text = manager.write(record);
+        Assert.assertEquals(val+";"+val+RecordPostMethod.PRE, text);
+        record = manager.read(text, RecordPostMethod.class);
+        Assert.assertEquals(val + RecordPostMethod.POST, record.col2);
+    }
+
+    @Test(expected = JfpaException.class)
+    public void testBadPostRead() throws Exception {
+        manager.loadClass(BadRecordPostReadMethod.class);
+    }
+
+    @Delimited(delimiter = ";")
+    public static class BadRecordPostReadMethod {
+        @TextColumn(length = -1, name = "COL1")
+        private String col1;
+        @PostRead
+        private void init(String s) {
+        }
+    }
+
+    @Test(expected = JfpaException.class)
+    public void testBadPreWrite() throws Exception {
+        manager.loadClass(BadRecordPreWriteMethod.class);
+    }
+
+    @Delimited(delimiter = ";")
+    public static class BadRecordPreWriteMethod {
+        @TextColumn(length = -1, name = "COL1")
+        private String col1;
+        @PreWrite
+        private void init(String s) {
+        }
     }
 }
