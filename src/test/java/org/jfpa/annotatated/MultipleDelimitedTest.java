@@ -1,11 +1,9 @@
 package org.jfpa.annotatated;
 
 import org.jfpa.annotation.MultipleDelimited;
-import org.jfpa.annotation.MultiplePositional;
 import org.jfpa.annotation.SubRecord;
 import org.jfpa.exception.InvalidMultipleRecordException;
 import org.jfpa.exception.InvalidRecordException;
-import org.jfpa.exception.JfpaException;
 import org.jfpa.interfaces.MultipleRecordValidator;
 import org.jfpa.interfaces.TypeExtractor;
 import org.jfpa.manager.RecordManager;
@@ -150,54 +148,6 @@ public class MultipleDelimitedTest {
         manager.write(record);
     }
 
-    @MultipleDelimited
-    public static class BadMultipleDelimitedRecordNone {
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testFailNone() throws Exception {
-       manager.loadClass(BadMultipleDelimitedRecordNone.class);
-    }
-
-    @MultipleDelimited(delimiter = ";")
-    public static class BadMultipleDelimitedRecordDel {
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testFailDel() throws Exception {
-        manager.loadClass(BadMultipleDelimitedRecordDel.class);
-    }
-
-    @MultipleDelimited(typePosition = 0)
-    public static class BadMultipleDelimitedRecordPos {
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testFailPos() throws Exception {
-        manager.loadClass(BadMultipleDelimitedRecordPos.class);
-    }
-
-    @MultipleDelimited(delimiter = ";", typePosition = 0, typeExtractor = BadMultipleDelimitedRecordBoth.class)
-    public static class BadMultipleDelimitedRecordBoth implements TypeExtractor {
-        public String extractType(String line) {
-            return null;
-        }
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testFailBoth() throws Exception {
-        manager.loadClass(BadMultipleDelimitedRecordBoth.class);
-    }
-
-    @MultipleDelimited(typeExtractor = BadMultipleDelimitedRecordBoth.class)
-    public static class FakeMultipleDelimitedRecordOuterExtractor {
-    }
-
-    @Test
-    public void testOuterExtractor() throws Exception {
-        manager.loadClass(FakeMultipleDelimitedRecordOuterExtractor.class);
-    }
-
     @MultipleDelimited(delimiter = ";", typePosition = 10)
     public static class BadMultipleDelimitedRecordOut {
     }
@@ -226,29 +176,4 @@ public class MultipleDelimitedTest {
         manager.write(record);
     }
 
-    @MultipleDelimited(delimiter = ";", typePosition = 0)
-    public static class BadMultipleDelimitedMixed {
-        @SubRecord(type = "A")
-        private FakeDelimitedRecordA recordA;
-        @SubRecord(type = "B")
-        private FakePositionalRecordB recordB;
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadMixed() throws Exception {
-        manager.loadClass(BadMultipleDelimitedMixed.class);
-    }
-
-    @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1)
-    public static class BadMultipleDelimitedMixedElse {
-        @SubRecord(type = "A")
-        private FakePositionalRecordA recordA;
-        @SubRecord(type = "B")
-        private FakeDelimitedRecordB recordB;
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadMixedElse() throws Exception {
-        manager.loadClass(BadMultipleDelimitedMixedElse.class);
-    }
 }

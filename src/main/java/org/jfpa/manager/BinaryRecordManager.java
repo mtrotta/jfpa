@@ -32,7 +32,7 @@ public class BinaryRecordManager extends RecordManager {
     }
 
     public <T> BinaryRecordManager(final Class<T> clazz, final RecordHandler<T> handler) {
-        if (super.loadClass(clazz) != Type.SINGLE) {
+        if (recordClassLoader.loadClass(clazz) != Type.SINGLE) {
             throw new JfpaException(clazz, "Class must be @Positional or @Delimited to be used with BinaryRecordManager");
         }
         AbstractBinaryRecord abstractBinaryRecord = loadBinary(clazz);

@@ -1,9 +1,9 @@
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Delimited;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.exception.InvalidRecordException;
-import org.jfpa.exception.JfpaException;
+import org.jfpa.manager.RecordClassLoaderTest;
 import org.jfpa.manager.RecordManager;
 import org.junit.Assert;
 import org.junit.Test;
@@ -92,38 +92,11 @@ public class DelimitedTest {
         manager.read(";", BadColumns.class);
     }
 
-    @Delimited(delimiter = ";")
-    public static class FakeDelimitedLength {
-        @TextColumn(length = 3)
-        private String value1;
-        @TextColumn(length = 3)
-        private String value2;
-        @TextColumn(length = 5)
-        private String value3;
-
-        public void setValue2(String value2) {
-            this.value2 = value2;
-        }
-    }
-
-    @Test
-    public void testLength() throws Exception {
-        manager.loadClass(FakeDelimitedLength.class);
-    }
-
     @Test(expected = InvalidRecordException.class)
     public void testBadLength() throws Exception {
-        FakeDelimitedLength record = new FakeDelimitedLength();
+        RecordClassLoaderTest.FakeDelimitedLength record = new RecordClassLoaderTest.FakeDelimitedLength();
         record.setValue2("long string");
         System.out.println(manager.write(record));
-    }
-
-    @Delimited(delimiter = "")
-    public static class FakeDelimitedBad {}
-
-    @Test(expected = JfpaException.class)
-    public void testBad() throws Exception {
-        manager.loadClass(FakeDelimitedBad.class);
     }
 
     @Delimited(delimiter=";", minColumns = 3)

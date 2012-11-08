@@ -25,10 +25,10 @@ public class MultipleRecordManager extends RecordManager {
 
     public <T> MultipleRecordManager(final Class<T> clazz, final RecordHandler<T> handler) {
         this.clazz = clazz;
-        if (super.loadClass(clazz) != Type.MULTIPLE) {
+        if (recordClassLoader.loadClass(clazz) != Type.MULTIPLE) {
             throw new JfpaException(clazz, "class must be @MultiplePositional or @MultipleDelimited to be used with MultipleRecordManager");
         }
-        List<CachedSubRecord> firsts = getFirsts(clazz);
+        List<CachedSubRecord> firsts = recordClassLoader.getFirsts(clazz);
         final RecordType[] firstRecordTypes = new RecordType[firsts.size()];
         for (int i = 0; i < firsts.size(); i++) {
             CachedSubRecord first = firsts.get(i);

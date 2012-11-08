@@ -1,12 +1,11 @@
-package org.jfpa.annotatated;
+package org.jfpa.manager;
 
+import org.jfpa.annotatated.Common;
 import org.jfpa.annotation.*;
 import org.jfpa.exception.InvalidRecordException;
 import org.jfpa.exception.JfpaException;
 import org.jfpa.interfaces.Converter;
 import org.jfpa.interfaces.TypeExtractor;
-import org.jfpa.manager.NullExtractor;
-import org.jfpa.manager.RecordManager;
 import org.jfpa.utility.Formats;
 import org.jfpa.utility.Utility;
 import org.junit.Assert;
@@ -84,7 +83,7 @@ public class RecordManagerTest {
     @Test
     public void testDate() throws Exception {
         Date value = Common.testDate;
-        Assert.assertEquals(value, manager.read(Utility.dateToString(value, manager.getDefaultDateFormat()), SimpleDate.class).getValue());
+        Assert.assertEquals(value, manager.read(Utility.dateToString(value, manager.recordClassLoader.getDefaultDateFormat()), SimpleDate.class).getValue());
     }
 
     @Positional
@@ -204,7 +203,7 @@ public class RecordManagerTest {
     @Test
     public void testBoolean() throws Exception {
         Boolean value = Boolean.TRUE;
-        Assert.assertEquals(value, manager.read(manager.getDefaultBooleanFormat()[0]+"    ", SimpleBoolean.class).getValue());
+        Assert.assertEquals(value, manager.read(manager.recordClassLoader.getDefaultBooleanFormat()[0] + "    ", SimpleBoolean.class).getValue());
     }
 
     public static class Bad {}
@@ -260,17 +259,6 @@ public class RecordManagerTest {
     @Test(expected = JfpaException.class)
     public void testBadBooleanType() throws Exception {
         manager.write(new BadBooleanFormat());
-    }
-
-    @Positional
-    public static class BadBooleanFormatNum {
-        @TextColumn(length = 1, booleanFormat = {"AB","CD","EF"})
-        private Boolean value;
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadBooleanFormat() throws Exception {
-        manager.loadClass(BadBooleanFormatNum.class);
     }
 
     @Positional
@@ -409,25 +397,7 @@ public class RecordManagerTest {
         FakePositionalTransient record = new FakePositionalTransient();
         record.setOtherVal(val);
         manager.write(record);
-        Assert.assertEquals(val,  record.getOtherVal());
-    }
-
-    public static class Extractor implements TypeExtractor {
-        public String extractType(String line) {
-            return null;
-        }
-    }
-
-    @MultiplePositional(typeExtractor = Extractor.class)
-    public static class FakePositionalExtractor { }
-
-    @MultipleDelimited(typeExtractor = Extractor.class)
-    public static class FakeDelimitedExtractor { }
-
-    @Test
-    public void testLoadExtractor() throws Exception {
-        manager.loadClass(FakePositionalExtractor.class);
-        manager.loadClass(FakeDelimitedExtractor.class);
+        Assert.assertEquals(val, record.getOtherVal());
     }
 
     @Test
@@ -440,29 +410,6 @@ public class RecordManagerTest {
         public String extractType(String line) {
             return null;
         }
-    }
-
-    @MultiplePositional(typeExtractor = AbstractExtractor.class)
-    public static class BadAbstractExtractor { }
-
-    @Test(expected = JfpaException.class)
-    public void testBadAbstractExtractor() throws Exception {
-        manager.loadClass(BadAbstractExtractor.class);
-    }
-
-    public static class PrivateExtractor implements TypeExtractor {
-        private PrivateExtractor() { }
-        public String extractType(String line) {
-            return null;
-        }
-    }
-
-    @MultiplePositional(typeExtractor = PrivateExtractor.class)
-    public static class BadPrivateExtractor { }
-
-    @Test(expected = JfpaException.class)
-    public void testBadPrivateExtractor() throws Exception {
-        manager.loadClass(BadPrivateExtractor.class);
     }
 
     @Positional
@@ -487,16 +434,6 @@ public class RecordManagerTest {
         private String value2;
         @TextColumn(length = -1)
         private String value3;
-    }
-
-    @Test
-    public void testExclude() throws Exception {
-        ExcludeDelimited record = new ExcludeDelimited();
-        record.value1 = "1";
-        record.value2 = "2";
-        record.value3 = "3";
-        manager.loadClass(ExcludeDelimited.class, "value2");
-        Assert.assertEquals("1;3", manager.write(record));
     }
 
     @Delimited(delimiter = ";")
@@ -536,7 +473,7 @@ public class RecordManagerTest {
 
     @Test(expected = JfpaException.class)
     public void testBadHeaderMultiple() throws Exception {
-        manager.mapFromHeader(FakeDelimitedExtractor.class, "");
+        manager.mapFromHeader(RecordClassLoaderTest.FakeDelimitedExtractor.class, "");
     }
 
     @Delimited(delimiter = ";")
@@ -566,25 +503,6 @@ public class RecordManagerTest {
         Assert.assertEquals(val+";"+val+RecordPostMethod.PRE, text);
         record = manager.read(text, RecordPostMethod.class);
         Assert.assertEquals(val + RecordPostMethod.POST, record.col2);
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadPostRead() throws Exception {
-        manager.loadClass(BadRecordPostReadMethod.class);
-    }
-
-    @Delimited(delimiter = ";")
-    public static class BadRecordPostReadMethod {
-        @TextColumn(length = -1, name = "COL1")
-        private String col1;
-        @PostRead
-        private void init(String s) {
-        }
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadPreWrite() throws Exception {
-        manager.loadClass(BadRecordPreWriteMethod.class);
     }
 
     @Delimited(delimiter = ";")

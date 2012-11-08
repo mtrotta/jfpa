@@ -123,11 +123,6 @@ public class MultiplePositionalTest {
     public static class FakeMultiplePositionalRecordOuterExtractor {
     }
 
-    @Test
-    public void testOuterExtractor() throws Exception {
-        manager.loadClass(FakeMultiplePositionalRecordOuterExtractor.class);
-    }
-
     @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1)
     public static class FakeMultiplePositionalRecordValidator implements MultipleRecordValidator {
         @SubRecord(type = "A")
@@ -158,59 +153,6 @@ public class MultiplePositionalTest {
         manager.write(record);
     }
 
-    @MultiplePositional
-    public static class BadMultiplePositionalRecordNone {
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testFailNone() throws Exception {
-        manager.loadClass(BadMultiplePositionalRecordNone.class);
-    }
-
-    @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1, typeExtractor = BadMultiplePositionalRecordBoth.class)
-    public static class BadMultiplePositionalRecordBoth implements TypeExtractor {
-        public String extractType(String line) {
-            return null;
-        }
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testFailBoth() throws Exception {
-        manager.loadClass(BadMultiplePositionalRecordBoth.class);
-    }
-
-    @MultiplePositional(typePositionBegin = 20)
-    public static class BadMultiplePositionalRecordEndMissing {}
-
-    @Test(expected = JfpaException.class)
-    public void testEndMissing() throws Exception {
-        manager.loadClass(BadMultiplePositionalRecordEndMissing.class);
-    }
-
-    @MultiplePositional(typePositionEnd = 20)
-    public static class BadMultiplePositionalRecordBeginMissing {}
-
-    @Test(expected = JfpaException.class)
-    public void testBeginMissing() throws Exception {
-        manager.loadClass(BadMultiplePositionalRecordBeginMissing.class);
-    }
-
-    @MultiplePositional(typePositionBegin = 30, typePositionEnd = 20)
-    public static class BadMultiplePositionalRecordBadNumbers {}
-
-    @Test(expected = JfpaException.class)
-    public void testBadNumbers() throws Exception {
-        manager.loadClass(BadMultiplePositionalRecordBadNumbers.class);
-    }
-
-    @MultiplePositional(typePositionBegin = 0, typePositionEnd = 0)
-    public static class BadMultiplePositionalRecordNegativeNumbers {}
-
-    @Test(expected = JfpaException.class)
-    public void testNegativeNumbers() throws Exception {
-        manager.loadClass(BadMultiplePositionalRecordNegativeNumbers.class);
-    }
-
     @MultiplePositional(typePositionBegin = 10, typePositionEnd = 20)
     public static class BadMultiplePositionalRecordOut {}
 
@@ -236,17 +178,6 @@ public class MultiplePositionalTest {
         FakeMultiplePositionalList record = manager.read(Common.posLineB, FakeMultiplePositionalList.class);
         Assert.assertEquals(1, record.getRecordB().size());
         manager.write(record);
-    }
-
-    @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1)
-    public static class FakeMultiplePositionalNone {
-        @SuppressWarnings("unused")
-        private FakePositionalRecordA recordA;
-    }
-
-    @Test
-    public void testNone() throws Exception {
-        manager.loadClass(FakeMultiplePositionalNone.class);
     }
 
     @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1)

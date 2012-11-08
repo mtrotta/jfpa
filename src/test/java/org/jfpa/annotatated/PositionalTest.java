@@ -1,9 +1,8 @@
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Positional;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.exception.InvalidRecordException;
-import org.jfpa.exception.JfpaException;
 import org.jfpa.manager.RecordManager;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,29 +41,9 @@ public class PositionalTest {
         private String value3;
     }
 
-    @Test
-    public void testLength() throws Exception {
-        manager.loadClass(FakePositionalLength.class);
-    }
-
     @Test(expected = InvalidRecordException.class)
     public void testTooShort() throws Exception {
         manager.read("Short", FakePositionalLength.class);
-    }
-
-    @Positional
-    public static class BadPositionalLength {
-        @TextColumn(length = 0)
-        private String value1;
-        @TextColumn(length = 3)
-        private String value2;
-        @TextColumn(length = 7)
-        private String value3;
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadLength() throws Exception {
-        manager.loadClass(BadPositionalLength.class);
     }
 
     @Positional(minLength = 10)

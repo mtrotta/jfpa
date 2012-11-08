@@ -7,7 +7,6 @@ import org.jfpa.exception.JfpaException;
 import org.jfpa.interfaces.MultipleRecordValidator;
 import org.jfpa.interfaces.RecordHandler;
 import org.jfpa.manager.MultipleRecordManager;
-import org.jfpa.manager.RecordManager;
 import org.jfpa.utility.Utility;
 import org.junit.Assert;
 import org.junit.Before;
@@ -334,35 +333,4 @@ public class MultipleRecordManagerTest {
         multipleRecordManager.flush();
     }
 
-    @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1)
-    public static class FakeMultipleRecordRawList {
-        @SubRecord(type = "F")
-        private FirstRecord first;
-        @SubRecord(type = "N")
-        private List normal;
-
-
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testRawList() throws Exception {
-        RecordManager recordManager = new RecordManager();
-        recordManager.loadClass(FakeMultipleRecordRawList.class);
-    }
-
-    @MultiplePositional(typePositionBegin = 0, typePositionEnd = 1)
-    public static class FakeMultipleRecordWildList {
-        @SubRecord(type = "F")
-        private FirstRecord first;
-        @SubRecord(type = "N")
-        private List<?> normal;
-
-
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testWildList() throws Exception {
-        RecordManager recordManager = new RecordManager();
-        recordManager.loadClass(FakeMultipleRecordWildList.class);
-    }
 }

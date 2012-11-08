@@ -16,10 +16,9 @@
 
 package org.jfpa.annotatated;
 
-import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.Delimited;
+import org.jfpa.annotation.TextColumn;
 import org.jfpa.annotation.WrappedColumns;
-import org.jfpa.exception.JfpaException;
 import org.jfpa.manager.RecordManager;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,41 +58,6 @@ public class WrappedTest {
         public FakeWrapped wrapped = new FakeWrapped();
         @TextColumn(length = -1)
         public String after;
-    }
-
-    public static class BadNestedWrapped {
-        @TextColumn(length = -1)
-        public String innerColumn;
-        @WrappedColumns
-        public FakeWrapped otherWrapped;
-
-    }
-
-    @Delimited(delimiter = ";")
-    public static class BadNestedDelimited {
-        @TextColumn(length = -1)
-        public String column;
-        @WrappedColumns
-        public BadNestedWrapped wrapped = new BadNestedWrapped();
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadNested() throws Exception {
-        manager.loadClass(BadNestedDelimited.class);
-    }
-
-    @Delimited(delimiter = ";")
-    public static class BadFakeDelimited {
-        @TextColumn(length = -1)
-        public String column;
-        @WrappedColumns
-        @TextColumn(length = -1)
-        public BadNestedWrapped wrapped = new BadNestedWrapped();
-    }
-
-    @Test(expected = JfpaException.class)
-    public void testBadColAndWrap() throws Exception {
-        manager.loadClass(BadFakeDelimited.class);
     }
 
 }
