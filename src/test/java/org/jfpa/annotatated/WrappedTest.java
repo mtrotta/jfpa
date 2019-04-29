@@ -45,18 +45,18 @@ public class WrappedTest {
     }
 
     public static class FakeWrapped {
-        @TextColumn(length = -1)
+        @TextColumn
         public String innerColumn;
 
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class FakeDelimited {
-        @TextColumn(length = -1)
+        @TextColumn
         public String before;
         @WrappedColumns
         public FakeWrapped wrapped = new FakeWrapped();
-        @TextColumn(length = -1)
+        @TextColumn
         public String after;
     }
 

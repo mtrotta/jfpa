@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public abstract class AbstractMultipleRecord implements MultipleFlatRecord {
 
-    private Map<RecordType, List<FlatRecord>> records = new LinkedHashMap<RecordType, List<FlatRecord>>();
+    private final Map<RecordType, List<FlatRecord>> records = new LinkedHashMap<RecordType, List<FlatRecord>>();
 
     public final void addRecord(FlatRecord record) {
         List<FlatRecord> list = records.get(record.getType());

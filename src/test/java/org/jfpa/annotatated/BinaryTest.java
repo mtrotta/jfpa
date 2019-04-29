@@ -94,7 +94,7 @@ public class BinaryTest {
     }
 
     @Binary(patternString = "012", encoding = "BadOne")
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadBinaryRecordEncoding {
     }
 
@@ -122,9 +122,9 @@ public class BinaryTest {
     @Binary(pattern = {0x30, 0x31, 0x32})
     @Delimited(delimiter = ":")
     public static class FakeBinaryRecordBytes {
-        @TextColumn(length = -1)
+        @TextColumn
         private String val1;
-        @TextColumn(length = -1)
+        @TextColumn
         private String val2;
 
         public String getVal1() {
@@ -139,9 +139,9 @@ public class BinaryTest {
     @Binary(pattern = {(byte)0xF0, (byte)0xF1, (byte)0xF2}, encoding = "Cp500")
     @Delimited(delimiter = ":")
     public static class FakeBinaryRecordBytesEncoding {
-        @TextColumn(length = -1)
+        @TextColumn
         private String val1;
-        @TextColumn(length = -1)
+        @TextColumn
         private String val2;
 
         public String getVal1() {
@@ -172,9 +172,9 @@ public class BinaryTest {
     @Binary(patternString = "012", encoding = "Cp500")
     @Delimited(delimiter = ":")
     public static class FakeBinaryRecordBytesEncodingString {
-        @TextColumn(length = -1)
+        @TextColumn
         private String val1;
-        @TextColumn(length = -1)
+        @TextColumn
         private String val2;
 
         public String getVal1() {
@@ -213,7 +213,7 @@ public class BinaryTest {
     }
 
     @Binary(pattern = {0x1}, patternString = "ABC")
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class FakeBinaryRecordBadBoth {
     }
 
@@ -222,7 +222,7 @@ public class BinaryTest {
         new BinaryRecordManager(FakeBinaryRecordBadBoth.class, null);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class FakeBinaryRecordBadMissingBinary {
     }
 
@@ -240,7 +240,7 @@ public class BinaryTest {
         new BinaryRecordManager(FakeBinaryRecordBadMissingDelimited.class, null);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadBinaryRecord {
     }
 

@@ -42,7 +42,7 @@ public class RecordClassLoaderTest {
     }
 
     @Positional
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadPositionalDelimited {
     }
 
@@ -135,7 +135,7 @@ public class RecordClassLoaderTest {
         recordClassLoader.loadClass(BadRecordPostReadMethod.class);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadRecordPostReadMethod {
         @TextColumn(length = -1, name = "COL1")
         private String col1;
@@ -149,7 +149,7 @@ public class RecordClassLoaderTest {
         recordClassLoader.loadClass(BadRecordPreWriteMethod.class);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadRecordPreWriteMethod {
         @TextColumn(length = -1, name = "COL1")
         private String col1;
@@ -234,7 +234,7 @@ public class RecordClassLoaderTest {
 
     @Positional
     public static class BadPositionalLength {
-        @TextColumn(length = 0)
+        @TextColumn
         private String value1;
         @TextColumn(length = 3)
         private String value2;
@@ -285,7 +285,7 @@ public class RecordClassLoaderTest {
 
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadNestedDelimited {
         @TextColumn(length = -1)
         public String column;
@@ -298,7 +298,7 @@ public class RecordClassLoaderTest {
         recordClassLoader.loadClass(BadNestedDelimited.class);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadFakeDelimited {
         @TextColumn(length = -1)
         public String column;
@@ -387,7 +387,7 @@ public class RecordClassLoaderTest {
     }
 
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class FakeDelimitedLength {
         @TextColumn(length = 3)
         private String value1;

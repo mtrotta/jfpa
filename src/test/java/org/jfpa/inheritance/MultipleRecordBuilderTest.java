@@ -77,7 +77,7 @@ public class MultipleRecordBuilderTest {
         try {
             builder.flush();
             Assert.fail();
-        } catch (InvalidMultipleRecordException e) {}
+        } catch (InvalidMultipleRecordException ignore) {}
         builder.add(header);
         builder.add(normal);
         builder.add(footer);

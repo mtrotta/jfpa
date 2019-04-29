@@ -139,7 +139,7 @@ public abstract class AbstractRecord implements FlatRecord {
         }
     }
 
-    public void validate() throws InvalidRecordException { }
+    public void validate() { }
 
     protected abstract String getPos(int pos) throws InvalidRecordException;
     protected abstract void setPos(int pos, String value) throws InvalidRecordException;

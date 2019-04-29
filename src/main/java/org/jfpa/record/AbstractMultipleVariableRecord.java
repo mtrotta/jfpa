@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public abstract class AbstractMultipleVariableRecord extends AbstractMultipleRecord implements MultipleTypeExtractor {
 
-    private Map<String, MultipleRecordType> mapRecordType;
+    private final Map<String, MultipleRecordType> mapRecordType;
 
     protected AbstractMultipleVariableRecord(Map<String, MultipleRecordType> mapRecordType) {
         this.mapRecordType = mapRecordType;

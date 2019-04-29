@@ -16,17 +16,17 @@
 
 package org.jfpa.annotation;
 
-/**
- * Identifies a string record in which each column is separated
- * by a delimiter string, such as a semicolumn, pipe, etc.
- * Normally a single character is used as delimiter, but
- * any string can be used as delimiter for columns
- */
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ Identifies a string record in which each column is separated
+ by a delimiter string, such as a semicolumn, pipe, etc.
+ Normally a single character is used as delimiter, but
+ any string can be used as delimiter for columns
+ */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Delimited {
@@ -34,7 +34,7 @@ public @interface Delimited {
     /**
      * Delimiter string, used as column separator
      */
-    String delimiter();
+    String delimiter() default ";";
 
     /**
      * Minimum column number that line should contain to be

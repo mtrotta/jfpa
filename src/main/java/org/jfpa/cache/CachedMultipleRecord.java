@@ -17,15 +17,15 @@ import java.util.regex.Pattern;
  */
 public class CachedMultipleRecord {
     private SeparatorType separatorType;
-    private Map<String, RecordType> mapTypes;
-    private Map<RecordType, CachedSubRecord> mapFields;
+    private final Map<String, RecordType> mapTypes;
+    private final Map<RecordType, CachedSubRecord> mapFields;
     private int typePositionBegin;
     private int typePositionEnd;
     private String delimiter;
     private int typePosition;
     private TypeExtractor typeExtractor;
     private boolean validator;
-    private List<CachedSubRecord> firsts;
+    private final List<CachedSubRecord> firsts;
 
     public CachedMultipleRecord(final Map<String, RecordType> mapTypes, final Map<RecordType, CachedSubRecord> mapFields, final List<CachedSubRecord> firsts) {
         this.mapTypes = mapTypes;

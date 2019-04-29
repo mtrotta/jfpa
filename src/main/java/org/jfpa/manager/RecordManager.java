@@ -41,7 +41,7 @@ public class RecordManager {
     public static final String DEFAULT_DATE_FORMAT = Formats.DATE_FORMAT;
     public static final String[] DEFAULT_BOOLEAN_FORMAT = Formats.BOOLEAN_Y_N;
 
-    protected RecordClassLoader recordClassLoader;
+    protected final RecordClassLoader recordClassLoader;
 
     public RecordManager() {
         this.recordClassLoader = new RecordClassLoader(DEFAULT_DATE_FORMAT, DEFAULT_BOOLEAN_FORMAT);
@@ -215,7 +215,7 @@ public class RecordManager {
             FlatRecord record = getFlatRecord(line, cachedRecord.getSeparatorType(), cachedRecord.getRecordType());
             T instance = createRecord(record, clazz);
             if (cachedRecord.isValidator()) {
-                RecordValidator validator = RecordValidator.class.cast(instance);
+                RecordValidator validator = (RecordValidator) instance;
                 validator.validate();
             }
             for (Method method : cachedRecord.getPostReadMethods()) {
@@ -234,7 +234,7 @@ public class RecordManager {
     private String writeSingle(Class clazz, Object instance) throws InvalidRecordException {
         CachedRecord cachedRecord = recordClassLoader.getCachedRecord(clazz);
         if (cachedRecord.isValidator()) {
-            RecordValidator validator = RecordValidator.class.cast(instance);
+            RecordValidator validator = (RecordValidator) instance;
             validator.validate();
         }
         try {
@@ -335,7 +335,7 @@ public class RecordManager {
             Object object = readSingle(line, cachedSubRecord.getFieldClass());
             cachedSubRecord.getField().set(instance, cachedSubRecord.isList() ? Collections.singletonList(object) : object);
             if (cachedMultipleRecord.isValidator()) {
-                MultipleRecordValidator validator = MultipleRecordValidator.class.cast(instance);
+                MultipleRecordValidator validator = (MultipleRecordValidator) instance;
                 validator.validate();
             }
             return instance;
@@ -362,7 +362,7 @@ public class RecordManager {
                 field.set(instance, cachedSubRecord.isList() ? list : list.get(0));
             }
             if (cachedMultipleRecord.isValidator()) {
-                MultipleRecordValidator validator = MultipleRecordValidator.class.cast(instance);
+                MultipleRecordValidator validator = (MultipleRecordValidator) instance;
                 validator.validate();
             }
             return instance;
@@ -377,7 +377,7 @@ public class RecordManager {
         try {
             CachedMultipleRecord cachedMultipleRecord = recordClassLoader.getCachedMultipleRecord(clazz);
             if (cachedMultipleRecord.isValidator()) {
-                MultipleRecordValidator validator = MultipleRecordValidator.class.cast(instance);
+                MultipleRecordValidator validator = (MultipleRecordValidator) instance;
                 validator.validate();
             }
             List<String> records = new ArrayList<String>();

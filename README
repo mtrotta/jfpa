@@ -1,7 +1,0 @@
-Welcome to JFPA - Java File Persistence Api
-
-JFPA is a small library that helps you reading and writing text files containing data.
-It can handle positional or delimited records, single line or multiple line records.
-Configuration is made by annotation or by class inheritance.
-
-Copyright 2011-2012 Matteo Trotta

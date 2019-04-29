@@ -11,7 +11,7 @@ import org.jfpa.interfaces.FlatRecordDTOFactory;
  */
 public class RecordTypeDTO<T extends FlatRecordDTO> extends RecordType {
 
-    private FlatRecordDTOFactory<T> factory;
+    private final FlatRecordDTOFactory<T> factory;
 
     public RecordTypeDTO(int[] lengths, FlatRecordDTOFactory<T> factory) {
         super(lengths);

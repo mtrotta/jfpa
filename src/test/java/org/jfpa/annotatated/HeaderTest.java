@@ -34,13 +34,13 @@ public class HeaderTest {
         Assert.assertEquals("COL1;COL2;COL3", manager.writeHeader(HeaderDelimited.class));
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class HeaderDelimited {
-        @TextColumn(length = -1, name = "COL1")
+        @TextColumn(name = "COL1")
         private String value1;
-        @TextColumn(length = -1, name = "COL2")
+        @TextColumn(name = "COL2")
         private String value2;
-        @TextColumn(length = -1, name = "COL3")
+        @TextColumn(name = "COL3")
         private String value3;
     }
 

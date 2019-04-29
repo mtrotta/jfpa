@@ -12,31 +12,31 @@ import java.util.Date;
  * Copyright © 2011 Matteo Trotta
  * Date: 09/10/11
  */
-@Delimited(delimiter = ";")
+@Delimited
 public class FakeDelimitedRecordB implements CommonRecord {
-    @TextColumn(length = -1)
+    @TextColumn
     private String type;
-    @TextColumn(length = -1)
+    @TextColumn
     private String f1;
-    @TextColumn(length = -1)
+    @TextColumn
     private String f2;
-    @TextColumn(length = -1, offset = 1)
+    @TextColumn(offset = 1)
     private String f4;
-    @TextColumn(length = -1)
+    @TextColumn
     private Date date;
-    @TextColumn(length = -1, dateFormat = "yyyy/MM/dd")
+    @TextColumn(dateFormat = "yyyy/MM/dd")
     private Date dateFormatted;
-    @TextColumn(length = -1)
+    @TextColumn
     private Long longVal;
-    @TextColumn(length = -1)
+    @TextColumn
     private BigDecimal bigDecimal;
-    @TextColumn(length = -1)
+    @TextColumn
     private Boolean bool;
-    @TextColumn(length = -1, booleanFormat = {"T","F"})
+    @TextColumn(booleanFormat = {"T","F"})
     private Boolean boolFormatted;
-    @TextColumn(length = -1)
+    @TextColumn
     private String blank;
-    @TextColumn(length = -1)
+    @TextColumn
     private String last;
 
     public String getType() {

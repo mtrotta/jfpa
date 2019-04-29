@@ -223,7 +223,7 @@ public class RecordManagerTest {
         manager.read(NULL_LINE, SimpleString.class);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class SimpleDelimited {
         @TextColumn(length = -1)
         private String value;
@@ -262,7 +262,7 @@ public class RecordManagerTest {
     }
 
     @Positional
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadPositionalDelimited {
     }
 
@@ -426,7 +426,7 @@ public class RecordManagerTest {
         Assert.assertEquals(value, BadStatic.value);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class ExcludeDelimited {
         @TextColumn(length = -1)
         public String value1;
@@ -436,7 +436,7 @@ public class RecordManagerTest {
         private String value3;
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class HeaderDelimited {
         @TextColumn(length = -1, name = "COL1")
         private String col1;
@@ -457,7 +457,7 @@ public class RecordManagerTest {
         Assert.assertEquals("B", record.col2);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadHeaderDelimited {
         @TextColumn(length = -1, name = "COL1")
         private String col1;
@@ -476,7 +476,7 @@ public class RecordManagerTest {
         manager.mapFromHeader(RecordClassLoaderTest.FakeDelimitedExtractor.class, "");
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class RecordPostMethod {
         public static final String PRE = "pre";
         public static final String POST = "post";
@@ -505,7 +505,7 @@ public class RecordManagerTest {
         Assert.assertEquals(val + RecordPostMethod.POST, record.col2);
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadRecordPreWriteMethod {
         @TextColumn(length = -1, name = "COL1")
         private String col1;

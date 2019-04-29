@@ -37,14 +37,14 @@ import java.util.*;
 
 public class RecordClassLoader {
 
-    private Map<Class, Type> knownClasses = new HashMap<Class, Type>();
-    private Map<Class, CachedRecord> singleClasses = new HashMap<Class, CachedRecord>();
-    private Map<Class, CachedMultipleRecord> multipleClasses = new HashMap<Class, CachedMultipleRecord>();
-    private Map<RecordType, Class> typeClasses = new HashMap<RecordType, Class>();
-    private Map<Class, TypeExtractor> extractors = new HashMap<Class, TypeExtractor>();
+    private final Map<Class, Type> knownClasses = new HashMap<Class, Type>();
+    private final Map<Class, CachedRecord> singleClasses = new HashMap<Class, CachedRecord>();
+    private final Map<Class, CachedMultipleRecord> multipleClasses = new HashMap<Class, CachedMultipleRecord>();
+    private final Map<RecordType, Class> typeClasses = new HashMap<RecordType, Class>();
+    private final Map<Class, TypeExtractor> extractors = new HashMap<Class, TypeExtractor>();
 
-    private String defaultDateFormat;
-    private String[] defaultBooleanFormat;
+    private final String defaultDateFormat;
+    private final String[] defaultBooleanFormat;
 
     public RecordClassLoader(String defaultDateFormat, String[] defaultBooleanFormat) {
         this.defaultDateFormat = defaultDateFormat;

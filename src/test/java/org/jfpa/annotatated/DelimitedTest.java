@@ -71,19 +71,19 @@ public class DelimitedTest {
 
     @Delimited(delimiter = ";", stringEnclose = "\"")
     public static class Enclosed {
-        @TextColumn(length = -1)
+        @TextColumn
         public String value1;
-        @TextColumn(length = -1)
+        @TextColumn
         public String value2;
     }
 
-    @Delimited(delimiter = ";")
+    @Delimited
     public static class BadColumns {
-        @TextColumn(length = -1)
+        @TextColumn
         private String value1;
-        @TextColumn(length = -1)
+        @TextColumn
         private String value2;
-        @TextColumn(length = -1)
+        @TextColumn
         private String value3;
     }
 

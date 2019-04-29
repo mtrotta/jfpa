@@ -29,7 +29,7 @@ public class BinaryRecordBuilder<T extends AbstractBinaryRecord> {
     private final byte[] pattern;
     private final int[] failure;
     private final RecordHandler<T> handler;
-    private T record;
+    private final T record;
     private int size = 0;
 
     public BinaryRecordBuilder(final T record, final RecordHandler<T> handler) {

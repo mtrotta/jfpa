@@ -37,7 +37,7 @@ public @interface TextColumn {
      * For @Delimited is the maximum length of the column, if not required
      * a zero or negative value can be used for unlimited length
      */
-    int length();
+    int length() default 0;
 
     /**
      * Name of column.
@@ -56,7 +56,7 @@ public @interface TextColumn {
     /**
      * Specifies the string format for Date columns (example: "dd/MM/yyyy")
      * If not specified, the default date format is used, for more info
-     * see {@link org.jfpa.manager.RecordManager#getDefaultDateFormat() defaultDateFormat}
+     * see {@link org.jfpa.manager.RecordClassLoader#getDefaultDateFormat() defaultDateFormat}
      * If it's specified on non Date column, param is ignored
      */
     String dateFormat() default Utility.EMPTY_STRING;
@@ -67,7 +67,7 @@ public @interface TextColumn {
      * expected. The first value should be the String that corresponds to TRUE,
      * while the second value should be the String that corresponds to FALSE.
      * If not specified, the default boolean format is used, for more info
-     * see {@link org.jfpa.manager.RecordManager#getDefaultBooleanFormat() defaultBooleanFormat}
+     * see {@link org.jfpa.manager.RecordClassLoader#getDefaultBooleanFormat() defaultBooleanFormat}
      * If it's specified on non Boolean columns, param is ignored
      */
     String[] booleanFormat() default { };

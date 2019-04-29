@@ -16,11 +16,11 @@ import java.util.Map;
  */
 public class CachedRecord {
     private SeparatorType separatorType;
-    private Map<Field, CachedColumn> mapColumns;
-    private Map<Field, Class> mapWrappedClasses;
-    private Map<String, CachedColumn> mapNames;
-    private List<Method> postReadMethods;
-    private List<Method> preWriteMethods;
+    private final Map<Field, CachedColumn> mapColumns;
+    private final Map<Field, Class> mapWrappedClasses;
+    private final Map<String, CachedColumn> mapNames;
+    private final List<Method> postReadMethods;
+    private final List<Method> preWriteMethods;
     private RecordType recordType;
     private boolean validator;
 

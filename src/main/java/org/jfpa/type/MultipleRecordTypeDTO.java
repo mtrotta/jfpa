@@ -11,7 +11,7 @@ import org.jfpa.interfaces.MultipleFlatRecordDTOFactory;
  */
 public class MultipleRecordTypeDTO<T extends MultipleFlatRecordDTO> extends MultipleRecordType {
 
-    private MultipleFlatRecordDTOFactory<T> factory;
+    private final MultipleFlatRecordDTOFactory<T> factory;
 
     public MultipleRecordTypeDTO(MultipleFlatRecordDTOFactory<T> factory) {
         this.factory = factory;

@@ -7,7 +7,6 @@
     <groupId>jfpa</groupId>
     <artifactId>jfpa</artifactId>
     <version>0.9.3</version>
-    <packaging>jar</packaging>
 
     <name>Java File Persistence Api</name>
 
@@ -29,14 +28,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
         </plugins>
-        <defaultGoal>package</defaultGoal>
     </build>
 
     <reporting>
@@ -44,12 +42,12 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.7</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.7</version>
+                <version>3.0.0</version>
             </plugin>
         </plugins>
     </reporting>

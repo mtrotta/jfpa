@@ -11,16 +11,16 @@ import java.lang.reflect.Field;
  * Date: 02/10/11
  */
 public class CachedColumn {
-    private String fieldName;
-    private String name;
-    private ColumnType columnType;
+    private final String fieldName;
+    private final String name;
+    private final ColumnType columnType;
     private int length;
-    private int offset;
+    private final int offset;
     private int position;
     private String format;
     private String[] booleanFormat;
-    private boolean invalidateOnError;
-    private Field parentField;
+    private final boolean invalidateOnError;
+    private final Field parentField;
 
     public CachedColumn(final String fieldName, final String name, final ColumnType columnType, final int offset, final boolean invalidateOnError, final Field parentField) {
         this.fieldName = fieldName;

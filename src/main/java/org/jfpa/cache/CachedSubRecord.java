@@ -12,10 +12,10 @@ import java.lang.reflect.Field;
  */
 public class CachedSubRecord {
 
-    private Class<?> clazz;
-    private Field field;
-    private RecordType recordType;
-    private boolean list;
+    private final Class<?> clazz;
+    private final Field field;
+    private final RecordType recordType;
+    private final boolean list;
 
     public CachedSubRecord(final Field field, final Class<?> clazz, final RecordType recordType, final boolean list) {
         this.field = field;
